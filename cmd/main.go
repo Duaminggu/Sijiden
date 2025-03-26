@@ -11,10 +11,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type Template struct {
-	templates *template.Template
-}
-
 func main() {
 	client := db.NewClient()
 
@@ -26,7 +22,7 @@ func main() {
 	routes.RegisterAjaxRoutes(e, client, store)
 	routes.RegisterComponentRoutes(e)
 
-	e.Renderer = template.NewRenderer()
+	e.Renderer = template.SijidenRenderer()
 	e.Static("/static", "static")
 
 	e.Logger.Fatal(e.Start(":1234"))

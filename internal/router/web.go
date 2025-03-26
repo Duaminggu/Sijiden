@@ -29,7 +29,7 @@ func RegisterWebRoutes(e *echo.Echo, store *session.SessionStore) {
 			Secure:   false,
 		})
 
-		return c.Render(200, "login.html", echo.Map{
+		return c.Render(200, "admin/login.html", echo.Map{
 			"csrf_token": csrfToken,
 		})
 	})
