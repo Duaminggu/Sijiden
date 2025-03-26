@@ -2,14 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Todo App",
+            "name": "Launch Sijiden",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/cmd",
             "cwd": "${workspaceFolder}",
             "env": {
-                "DB_DSN": "root@tcp(127.0.0.1:3306)/todogo?parseTime=True"
+                "DB_DSN": "root@tcp(127.0.0.1:3306)/sijiden_tdev?parseTime=True"
             },
             "args": [],
             "showLog": true
