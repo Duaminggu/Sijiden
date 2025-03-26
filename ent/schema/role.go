@@ -19,7 +19,7 @@ func (Role) Fields() []ent.Field {
 		field.String("name").NotEmpty(),
 		field.String("description"),
 		field.Time("created_at").Default(time.Now),
-		field.Time("updated_at").UpdateDefault(time.Now),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}
 }
 

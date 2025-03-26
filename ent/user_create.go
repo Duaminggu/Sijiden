@@ -105,6 +105,14 @@ func (uc *UserCreate) SetUpdatedAt(t time.Time) *UserCreate {
 	return uc
 }
 
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (uc *UserCreate) SetNillableUpdatedAt(t *time.Time) *UserCreate {
+	if t != nil {
+		uc.SetUpdatedAt(*t)
+	}
+	return uc
+}
+
 // AddUserRoleIDs adds the "user_roles" edge to the UserRole entity by IDs.
 func (uc *UserCreate) AddUserRoleIDs(ids ...int) *UserCreate {
 	uc.mutation.AddUserRoleIDs(ids...)
@@ -166,6 +174,10 @@ func (uc *UserCreate) defaults() {
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		v := user.DefaultCreatedAt()
 		uc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := uc.mutation.UpdatedAt(); !ok {
+		v := user.DefaultUpdatedAt()
+		uc.mutation.SetUpdatedAt(v)
 	}
 }
 

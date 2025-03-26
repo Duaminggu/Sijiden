@@ -53,6 +53,14 @@ func (rc *RoleCreate) SetUpdatedAt(t time.Time) *RoleCreate {
 	return rc
 }
 
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (rc *RoleCreate) SetNillableUpdatedAt(t *time.Time) *RoleCreate {
+	if t != nil {
+		rc.SetUpdatedAt(*t)
+	}
+	return rc
+}
+
 // AddUserRoleIDs adds the "user_roles" edge to the UserRole entity by IDs.
 func (rc *RoleCreate) AddUserRoleIDs(ids ...int) *RoleCreate {
 	rc.mutation.AddUserRoleIDs(ids...)
@@ -106,6 +114,10 @@ func (rc *RoleCreate) defaults() {
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		v := role.DefaultCreatedAt()
 		rc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := rc.mutation.UpdatedAt(); !ok {
+		v := role.DefaultUpdatedAt()
+		rc.mutation.SetUpdatedAt(v)
 	}
 }
 

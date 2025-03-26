@@ -25,7 +25,7 @@ func (User) Fields() []ent.Field {
 		field.Bool("email_verified").Default(false),
 		field.Bool("phone_verified").Default(false),
 		field.Time("created_at").Default(time.Now),
-		field.Time("updated_at").UpdateDefault(time.Now),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}
 }
 
