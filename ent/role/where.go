@@ -65,6 +65,11 @@ func Description(v string) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldDescription, v))
 }
 
+// RedirectUrl applies equality check predicate on the "redirectUrl" field. It's identical to RedirectUrlEQ.
+func RedirectUrl(v string) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldRedirectUrl, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldCreatedAt, v))
@@ -203,6 +208,71 @@ func DescriptionEqualFold(v string) predicate.Role {
 // DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
 func DescriptionContainsFold(v string) predicate.Role {
 	return predicate.Role(sql.FieldContainsFold(FieldDescription, v))
+}
+
+// RedirectUrlEQ applies the EQ predicate on the "redirectUrl" field.
+func RedirectUrlEQ(v string) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldRedirectUrl, v))
+}
+
+// RedirectUrlNEQ applies the NEQ predicate on the "redirectUrl" field.
+func RedirectUrlNEQ(v string) predicate.Role {
+	return predicate.Role(sql.FieldNEQ(FieldRedirectUrl, v))
+}
+
+// RedirectUrlIn applies the In predicate on the "redirectUrl" field.
+func RedirectUrlIn(vs ...string) predicate.Role {
+	return predicate.Role(sql.FieldIn(FieldRedirectUrl, vs...))
+}
+
+// RedirectUrlNotIn applies the NotIn predicate on the "redirectUrl" field.
+func RedirectUrlNotIn(vs ...string) predicate.Role {
+	return predicate.Role(sql.FieldNotIn(FieldRedirectUrl, vs...))
+}
+
+// RedirectUrlGT applies the GT predicate on the "redirectUrl" field.
+func RedirectUrlGT(v string) predicate.Role {
+	return predicate.Role(sql.FieldGT(FieldRedirectUrl, v))
+}
+
+// RedirectUrlGTE applies the GTE predicate on the "redirectUrl" field.
+func RedirectUrlGTE(v string) predicate.Role {
+	return predicate.Role(sql.FieldGTE(FieldRedirectUrl, v))
+}
+
+// RedirectUrlLT applies the LT predicate on the "redirectUrl" field.
+func RedirectUrlLT(v string) predicate.Role {
+	return predicate.Role(sql.FieldLT(FieldRedirectUrl, v))
+}
+
+// RedirectUrlLTE applies the LTE predicate on the "redirectUrl" field.
+func RedirectUrlLTE(v string) predicate.Role {
+	return predicate.Role(sql.FieldLTE(FieldRedirectUrl, v))
+}
+
+// RedirectUrlContains applies the Contains predicate on the "redirectUrl" field.
+func RedirectUrlContains(v string) predicate.Role {
+	return predicate.Role(sql.FieldContains(FieldRedirectUrl, v))
+}
+
+// RedirectUrlHasPrefix applies the HasPrefix predicate on the "redirectUrl" field.
+func RedirectUrlHasPrefix(v string) predicate.Role {
+	return predicate.Role(sql.FieldHasPrefix(FieldRedirectUrl, v))
+}
+
+// RedirectUrlHasSuffix applies the HasSuffix predicate on the "redirectUrl" field.
+func RedirectUrlHasSuffix(v string) predicate.Role {
+	return predicate.Role(sql.FieldHasSuffix(FieldRedirectUrl, v))
+}
+
+// RedirectUrlEqualFold applies the EqualFold predicate on the "redirectUrl" field.
+func RedirectUrlEqualFold(v string) predicate.Role {
+	return predicate.Role(sql.FieldEqualFold(FieldRedirectUrl, v))
+}
+
+// RedirectUrlContainsFold applies the ContainsFold predicate on the "redirectUrl" field.
+func RedirectUrlContainsFold(v string) predicate.Role {
+	return predicate.Role(sql.FieldContainsFold(FieldRedirectUrl, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

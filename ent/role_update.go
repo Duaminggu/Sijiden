@@ -57,6 +57,20 @@ func (ru *RoleUpdate) SetNillableDescription(s *string) *RoleUpdate {
 	return ru
 }
 
+// SetRedirectUrl sets the "redirectUrl" field.
+func (ru *RoleUpdate) SetRedirectUrl(s string) *RoleUpdate {
+	ru.mutation.SetRedirectUrl(s)
+	return ru
+}
+
+// SetNillableRedirectUrl sets the "redirectUrl" field if the given value is not nil.
+func (ru *RoleUpdate) SetNillableRedirectUrl(s *string) *RoleUpdate {
+	if s != nil {
+		ru.SetRedirectUrl(*s)
+	}
+	return ru
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ru *RoleUpdate) SetCreatedAt(t time.Time) *RoleUpdate {
 	ru.mutation.SetCreatedAt(t)
@@ -182,6 +196,9 @@ func (ru *RoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ru.mutation.Description(); ok {
 		_spec.SetField(role.FieldDescription, field.TypeString, value)
 	}
+	if value, ok := ru.mutation.RedirectUrl(); ok {
+		_spec.SetField(role.FieldRedirectUrl, field.TypeString, value)
+	}
 	if value, ok := ru.mutation.CreatedAt(); ok {
 		_spec.SetField(role.FieldCreatedAt, field.TypeTime, value)
 	}
@@ -277,6 +294,20 @@ func (ruo *RoleUpdateOne) SetDescription(s string) *RoleUpdateOne {
 func (ruo *RoleUpdateOne) SetNillableDescription(s *string) *RoleUpdateOne {
 	if s != nil {
 		ruo.SetDescription(*s)
+	}
+	return ruo
+}
+
+// SetRedirectUrl sets the "redirectUrl" field.
+func (ruo *RoleUpdateOne) SetRedirectUrl(s string) *RoleUpdateOne {
+	ruo.mutation.SetRedirectUrl(s)
+	return ruo
+}
+
+// SetNillableRedirectUrl sets the "redirectUrl" field if the given value is not nil.
+func (ruo *RoleUpdateOne) SetNillableRedirectUrl(s *string) *RoleUpdateOne {
+	if s != nil {
+		ruo.SetRedirectUrl(*s)
 	}
 	return ruo
 }
@@ -435,6 +466,9 @@ func (ruo *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) 
 	}
 	if value, ok := ruo.mutation.Description(); ok {
 		_spec.SetField(role.FieldDescription, field.TypeString, value)
+	}
+	if value, ok := ruo.mutation.RedirectUrl(); ok {
+		_spec.SetField(role.FieldRedirectUrl, field.TypeString, value)
 	}
 	if value, ok := ruo.mutation.CreatedAt(); ok {
 		_spec.SetField(role.FieldCreatedAt, field.TypeTime, value)

@@ -2,6 +2,8 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -9,6 +11,12 @@ import (
 // UserRole holds the schema definition for the UserRole entity.
 type UserRole struct {
 	ent.Schema
+}
+
+func (UserRole) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entsql.Annotation{Table: "sijiden_user_roles"},
+	}
 }
 
 // Fields of the UserRole.

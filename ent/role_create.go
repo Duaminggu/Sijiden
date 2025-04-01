@@ -33,6 +33,12 @@ func (rc *RoleCreate) SetDescription(s string) *RoleCreate {
 	return rc
 }
 
+// SetRedirectUrl sets the "redirectUrl" field.
+func (rc *RoleCreate) SetRedirectUrl(s string) *RoleCreate {
+	rc.mutation.SetRedirectUrl(s)
+	return rc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (rc *RoleCreate) SetCreatedAt(t time.Time) *RoleCreate {
 	rc.mutation.SetCreatedAt(t)
@@ -134,6 +140,9 @@ func (rc *RoleCreate) check() error {
 	if _, ok := rc.mutation.Description(); !ok {
 		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "Role.description"`)}
 	}
+	if _, ok := rc.mutation.RedirectUrl(); !ok {
+		return &ValidationError{Name: "redirectUrl", err: errors.New(`ent: missing required field "Role.redirectUrl"`)}
+	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Role.created_at"`)}
 	}
@@ -173,6 +182,10 @@ func (rc *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 	if value, ok := rc.mutation.Description(); ok {
 		_spec.SetField(role.FieldDescription, field.TypeString, value)
 		_node.Description = value
+	}
+	if value, ok := rc.mutation.RedirectUrl(); ok {
+		_spec.SetField(role.FieldRedirectUrl, field.TypeString, value)
+		_node.RedirectUrl = value
 	}
 	if value, ok := rc.mutation.CreatedAt(); ok {
 		_spec.SetField(role.FieldCreatedAt, field.TypeTime, value)

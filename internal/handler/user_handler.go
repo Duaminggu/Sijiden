@@ -9,6 +9,7 @@ import (
 	"github.com/duaminggu/sijiden/ent/user"
 	"github.com/duaminggu/sijiden/ent/userrole"
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserHandler struct {
@@ -31,11 +32,17 @@ func (h *UserHandler) Create(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": "Invalid input"})
 	}
 
+	// Hash password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "failed to hash password"})
+	}
+
 	user, err := h.Client.User.
 		Create().
 		SetUsername(req.Username).
 		SetEmail(req.Email).
-		SetPassword(req.Password).
+		SetPassword(string(hashedPassword)).
 		SetFirstName(req.FirstName).
 		SetLastName(req.LastName).
 		SetPhoneNumber(req.PhoneNumber).
@@ -76,10 +83,16 @@ func (h *UserHandler) Update(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": "Invalid input"})
 	}
 
+	// Hash password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "failed to hash password"})
+	}
+
 	u, err := h.Client.User.UpdateOneID(id).
 		SetUsername(req.Username).
 		SetEmail(req.Email).
-		SetPassword(req.Password).
+		SetPassword(string(hashedPassword)).
 		SetFirstName(req.FirstName).
 		SetLastName(req.LastName).
 		SetPhoneNumber(req.PhoneNumber).

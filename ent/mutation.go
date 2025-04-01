@@ -39,6 +39,7 @@ type RoleMutation struct {
 	id                *int
 	name              *string
 	description       *string
+	redirectUrl       *string
 	created_at        *time.Time
 	updated_at        *time.Time
 	clearedFields     map[string]struct{}
@@ -220,6 +221,42 @@ func (m *RoleMutation) ResetDescription() {
 	m.description = nil
 }
 
+// SetRedirectUrl sets the "redirectUrl" field.
+func (m *RoleMutation) SetRedirectUrl(s string) {
+	m.redirectUrl = &s
+}
+
+// RedirectUrl returns the value of the "redirectUrl" field in the mutation.
+func (m *RoleMutation) RedirectUrl() (r string, exists bool) {
+	v := m.redirectUrl
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRedirectUrl returns the old "redirectUrl" field's value of the Role entity.
+// If the Role object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoleMutation) OldRedirectUrl(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRedirectUrl is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRedirectUrl requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRedirectUrl: %w", err)
+	}
+	return oldValue.RedirectUrl, nil
+}
+
+// ResetRedirectUrl resets all changes to the "redirectUrl" field.
+func (m *RoleMutation) ResetRedirectUrl() {
+	m.redirectUrl = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *RoleMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -380,12 +417,15 @@ func (m *RoleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RoleMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.name != nil {
 		fields = append(fields, role.FieldName)
 	}
 	if m.description != nil {
 		fields = append(fields, role.FieldDescription)
+	}
+	if m.redirectUrl != nil {
+		fields = append(fields, role.FieldRedirectUrl)
 	}
 	if m.created_at != nil {
 		fields = append(fields, role.FieldCreatedAt)
@@ -405,6 +445,8 @@ func (m *RoleMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case role.FieldDescription:
 		return m.Description()
+	case role.FieldRedirectUrl:
+		return m.RedirectUrl()
 	case role.FieldCreatedAt:
 		return m.CreatedAt()
 	case role.FieldUpdatedAt:
@@ -422,6 +464,8 @@ func (m *RoleMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldName(ctx)
 	case role.FieldDescription:
 		return m.OldDescription(ctx)
+	case role.FieldRedirectUrl:
+		return m.OldRedirectUrl(ctx)
 	case role.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case role.FieldUpdatedAt:
@@ -448,6 +492,13 @@ func (m *RoleMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
+		return nil
+	case role.FieldRedirectUrl:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRedirectUrl(v)
 		return nil
 	case role.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -517,6 +568,9 @@ func (m *RoleMutation) ResetField(name string) error {
 		return nil
 	case role.FieldDescription:
 		m.ResetDescription()
+		return nil
+	case role.FieldRedirectUrl:
+		m.ResetRedirectUrl()
 		return nil
 	case role.FieldCreatedAt:
 		m.ResetCreatedAt()

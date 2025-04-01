@@ -16,7 +16,7 @@ func RegisterWebRoutes(e *echo.Echo, store *session.SessionStore) {
 
 	admin := e.Group("/sijiden")
 
-	admin.GET("/login", func(c echo.Context) error {
+	admin.GET("/auth", func(c echo.Context) error {
 		sessionID := uuid.NewString()
 		csrfToken := uuid.NewString()
 		store.SetCSRF(sessionID, csrfToken)
@@ -29,7 +29,7 @@ func RegisterWebRoutes(e *echo.Echo, store *session.SessionStore) {
 			Secure:   false,
 		})
 
-		return c.Render(200, "admin/login.html", echo.Map{
+		return c.Render(200, "sijiden/auth.html", echo.Map{
 			"csrf_token": csrfToken,
 		})
 	})
@@ -37,92 +37,17 @@ func RegisterWebRoutes(e *echo.Echo, store *session.SessionStore) {
 	admin.GET("", func(c echo.Context) error {
 		userID := c.Get("user_id")
 		if userID == nil {
-			return c.Redirect(302, "/login")
+			return c.Redirect(302, "/sijiden/auth")
 		}
 
-		cookie, err := c.Cookie("session_id")
+		_, err := c.Cookie("session_id")
 		if err != nil {
-			return c.Redirect(302, "/login")
+			return c.Redirect(302, "/sijiden/auth")
 		}
 
-		csrfToken := uuid.NewString()
-		store.SetCSRF(cookie.Value, csrfToken)
-
-		return c.Render(200, "todos.html", echo.Map{
-			"username":   "User",
-			"csrf_token": csrfToken,
+		return c.Render(200, "sijiden/dashboard.html", echo.Map{
+			"username": "User",
 		})
 	}, middleware.RequireLoginView(store))
-
-	// Custom route start here
-
-	e.GET("/login", func(c echo.Context) error {
-		sessionID := uuid.NewString()
-		csrfToken := uuid.NewString()
-		store.SetCSRF(sessionID, csrfToken)
-
-		c.SetCookie(&http.Cookie{
-			Name:     "session_id",
-			Value:    sessionID,
-			Path:     "/",
-			HttpOnly: true,
-			Secure:   false,
-		})
-
-		return c.Render(200, "login.html", echo.Map{
-			"csrf_token": csrfToken,
-		})
-	})
-
-	e.GET("/login", func(c echo.Context) error {
-		sessionID := uuid.NewString()
-		csrfToken := uuid.NewString()
-		store.SetCSRF(sessionID, csrfToken)
-
-		c.SetCookie(&http.Cookie{
-			Name:     "session_id",
-			Value:    sessionID,
-			Path:     "/",
-			HttpOnly: true,
-			Secure:   false,
-		})
-
-		return c.Render(200, "login.html", echo.Map{
-			"csrf_token": csrfToken,
-		})
-	})
-
-	e.GET("/register", func(c echo.Context) error {
-		sessionID := uuid.NewString()
-		csrfToken := uuid.NewString()
-		store.SetCSRF(sessionID, csrfToken)
-
-		c.SetCookie(&http.Cookie{
-			Name:     "session_id",
-			Value:    sessionID,
-			Path:     "/",
-			HttpOnly: true,
-			Secure:   false,
-		})
-
-		return c.Render(200, "register.html", echo.Map{
-			"csrf_token": csrfToken,
-		})
-	})
-
-	e.GET("/logout", func(c echo.Context) error {
-		cookie, err := c.Cookie("session_id")
-		if err == nil {
-			store.Delete(cookie.Value)
-			c.SetCookie(&http.Cookie{
-				Name:     "session_id",
-				Value:    "",
-				Path:     "/",
-				MaxAge:   -1,
-				HttpOnly: true,
-			})
-		}
-		return c.Redirect(302, "/login")
-	})
 
 }

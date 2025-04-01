@@ -21,6 +21,8 @@ type Role struct {
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
+	// RedirectUrl holds the value of the "redirectUrl" field.
+	RedirectUrl string `json:"redirectUrl,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -56,7 +58,7 @@ func (*Role) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case role.FieldID:
 			values[i] = new(sql.NullInt64)
-		case role.FieldName, role.FieldDescription:
+		case role.FieldName, role.FieldDescription, role.FieldRedirectUrl:
 			values[i] = new(sql.NullString)
 		case role.FieldCreatedAt, role.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -92,6 +94,12 @@ func (r *Role) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
 				r.Description = value.String
+			}
+		case role.FieldRedirectUrl:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field redirectUrl", values[i])
+			} else if value.Valid {
+				r.RedirectUrl = value.String
 			}
 		case role.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -151,6 +159,9 @@ func (r *Role) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(r.Description)
+	builder.WriteString(", ")
+	builder.WriteString("redirectUrl=")
+	builder.WriteString(r.RedirectUrl)
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(r.CreatedAt.Format(time.ANSIC))

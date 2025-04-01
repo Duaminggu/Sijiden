@@ -18,6 +18,8 @@ const (
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldRedirectUrl holds the string denoting the redirecturl field in the database.
+	FieldRedirectUrl = "redirect_url"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -25,12 +27,12 @@ const (
 	// EdgeUserRoles holds the string denoting the user_roles edge name in mutations.
 	EdgeUserRoles = "user_roles"
 	// Table holds the table name of the role in the database.
-	Table = "roles"
+	Table = "sijiden_roles"
 	// UserRolesTable is the table that holds the user_roles relation/edge.
-	UserRolesTable = "user_roles"
+	UserRolesTable = "sijiden_user_roles"
 	// UserRolesInverseTable is the table name for the UserRole entity.
 	// It exists in this package in order to avoid circular dependency with the "userrole" package.
-	UserRolesInverseTable = "user_roles"
+	UserRolesInverseTable = "sijiden_user_roles"
 	// UserRolesColumn is the table column denoting the user_roles relation/edge.
 	UserRolesColumn = "role_id"
 )
@@ -40,6 +42,7 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldDescription,
+	FieldRedirectUrl,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -81,6 +84,11 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByDescription orders the results by the description field.
 func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByRedirectUrl orders the results by the redirectUrl field.
+func ByRedirectUrl(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRedirectUrl, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

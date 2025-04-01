@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" x-data="loginForm()">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+
+<body class="ui middle aligned center aligned grid" style="height: 100vh; background-color: #f7f7f7;">
+    <div class="ui raised very padded text container segment" style="max-width: 600px;" x-data="loginForm()">
+        <h2 class="ui teal header center aligned">Login to Your Account</h2>
+
+        <form class="ui form" @submit.prevent="submit">
+            <div class="field">
+                <label>Email</label>
+                <div class="ui left icon input">
+                    <i class="user icon"></i>
+                    <input type="email" placeholder="E-mail address" x-model="email" required />
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Password</label>
+                <div class="ui left icon input">
+                    <i class="lock icon"></i>
+                    <input type="password" placeholder="Password" x-model="password" required />
+                </div>
+            </div>
+
+            <button class="ui fluid large teal submit button" type="submit">Login</button>
+
+            <div class="ui red message" x-show="error" x-text="error" style="margin-top: 1em;"></div>
+        </form>
+    </div>
+
+    <script>
+        function loginForm() {
+            return {
+                email: '',
+                password: '',
+                error: '',
+                submit() {
+                    if (!this.email || !this.password) {
+                        this.error = 'Email and password are required.';
+                        return;
+                    }
+
+                    // Simulasi login
+                    if (this.email === 'admin@example.com' && this.password === 'admin') {
+                        alert('Login successful!');
+                    } else {
+                        this.error = 'Invalid email or password.';
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

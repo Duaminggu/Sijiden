@@ -8,6 +8,7 @@ import (
 	"github.com/duaminggu/sijiden/ent/role"
 	"github.com/duaminggu/sijiden/ent/user"
 	"github.com/duaminggu/sijiden/ent/userrole"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func Seed(client *ent.Client) error {
@@ -20,6 +21,7 @@ func Seed(client *ent.Client) error {
 			Create().
 			SetName("admin").
 			SetDescription("Administrator Role").
+			SetRedirectUrl("/sijiden").
 			Save(ctx)
 		if err != nil {
 			return fmt.Errorf("failed seeding admin role: %w", err)
@@ -29,6 +31,9 @@ func Seed(client *ent.Client) error {
 		fmt.Println("ℹ️  Role 'admin' already exists.")
 	}
 
+	// Hash password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("ZXasqw12!@"), bcrypt.DefaultCost)
+
 	// Seed User
 	adminUser, err := client.User.Query().Where(user.UsernameEQ("superadmin")).Only(ctx)
 	if ent.IsNotFound(err) {
@@ -36,7 +41,7 @@ func Seed(client *ent.Client) error {
 			Create().
 			SetUsername("superadmin").
 			SetEmail("admin@mail.com").
-			SetPassword("ZXasqw12!@").
+			SetPassword(string(hashedPassword)).
 			SetEmailVerified(true).
 			SetPhoneVerified(true).
 			SetFirstName("Super").

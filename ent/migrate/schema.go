@@ -3,27 +3,29 @@
 package migrate
 
 import (
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/dialect/sql/schema"
 	"entgo.io/ent/schema/field"
 )
 
 var (
-	// RolesColumns holds the columns for the "roles" table.
-	RolesColumns = []*schema.Column{
+	// SijidenRolesColumns holds the columns for the "sijiden_roles" table.
+	SijidenRolesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString},
+		{Name: "redirect_url", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 	}
-	// RolesTable holds the schema information for the "roles" table.
-	RolesTable = &schema.Table{
-		Name:       "roles",
-		Columns:    RolesColumns,
-		PrimaryKey: []*schema.Column{RolesColumns[0]},
+	// SijidenRolesTable holds the schema information for the "sijiden_roles" table.
+	SijidenRolesTable = &schema.Table{
+		Name:       "sijiden_roles",
+		Columns:    SijidenRolesColumns,
+		PrimaryKey: []*schema.Column{SijidenRolesColumns[0]},
 	}
-	// UsersColumns holds the columns for the "users" table.
-	UsersColumns = []*schema.Column{
+	// SijidenUsersColumns holds the columns for the "sijiden_users" table.
+	SijidenUsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "username", Type: field.TypeString, Unique: true},
 		{Name: "email", Type: field.TypeString, Unique: true},
@@ -36,47 +38,56 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 	}
-	// UsersTable holds the schema information for the "users" table.
-	UsersTable = &schema.Table{
-		Name:       "users",
-		Columns:    UsersColumns,
-		PrimaryKey: []*schema.Column{UsersColumns[0]},
+	// SijidenUsersTable holds the schema information for the "sijiden_users" table.
+	SijidenUsersTable = &schema.Table{
+		Name:       "sijiden_users",
+		Columns:    SijidenUsersColumns,
+		PrimaryKey: []*schema.Column{SijidenUsersColumns[0]},
 	}
-	// UserRolesColumns holds the columns for the "user_roles" table.
-	UserRolesColumns = []*schema.Column{
+	// SijidenUserRolesColumns holds the columns for the "sijiden_user_roles" table.
+	SijidenUserRolesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "role_id", Type: field.TypeInt},
 		{Name: "user_id", Type: field.TypeInt},
 	}
-	// UserRolesTable holds the schema information for the "user_roles" table.
-	UserRolesTable = &schema.Table{
-		Name:       "user_roles",
-		Columns:    UserRolesColumns,
-		PrimaryKey: []*schema.Column{UserRolesColumns[0]},
+	// SijidenUserRolesTable holds the schema information for the "sijiden_user_roles" table.
+	SijidenUserRolesTable = &schema.Table{
+		Name:       "sijiden_user_roles",
+		Columns:    SijidenUserRolesColumns,
+		PrimaryKey: []*schema.Column{SijidenUserRolesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "user_roles_roles_user_roles",
-				Columns:    []*schema.Column{UserRolesColumns[1]},
-				RefColumns: []*schema.Column{RolesColumns[0]},
+				Symbol:     "sijiden_user_roles_sijiden_roles_user_roles",
+				Columns:    []*schema.Column{SijidenUserRolesColumns[1]},
+				RefColumns: []*schema.Column{SijidenRolesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "user_roles_users_user_roles",
-				Columns:    []*schema.Column{UserRolesColumns[2]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
+				Symbol:     "sijiden_user_roles_sijiden_users_user_roles",
+				Columns:    []*schema.Column{SijidenUserRolesColumns[2]},
+				RefColumns: []*schema.Column{SijidenUsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		RolesTable,
-		UsersTable,
-		UserRolesTable,
+		SijidenRolesTable,
+		SijidenUsersTable,
+		SijidenUserRolesTable,
 	}
 )
 
 func init() {
-	UserRolesTable.ForeignKeys[0].RefTable = RolesTable
-	UserRolesTable.ForeignKeys[1].RefTable = UsersTable
+	SijidenRolesTable.Annotation = &entsql.Annotation{
+		Table: "sijiden_roles",
+	}
+	SijidenUsersTable.Annotation = &entsql.Annotation{
+		Table: "sijiden_users",
+	}
+	SijidenUserRolesTable.ForeignKeys[0].RefTable = SijidenRolesTable
+	SijidenUserRolesTable.ForeignKeys[1].RefTable = SijidenUsersTable
+	SijidenUserRolesTable.Annotation = &entsql.Annotation{
+		Table: "sijiden_user_roles",
+	}
 }
