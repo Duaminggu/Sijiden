@@ -10,7 +10,8 @@
             "cwd": "${workspaceFolder}",
             "env": {
                 "DB_DSN": "root@tcp(127.0.0.1:3306)/sijiden_tdev?parseTime=True",
-                "SEED_ENABLED": "true"
+                "SEED_ENABLED": "true",
+                "IS_DEV": "true"
             },
             "args": [],
             "showLog": true

@@ -9,12 +9,16 @@ import (
 )
 
 func RegisterAjaxRoutes(e *echo.Echo, client *ent.Client, store *session.SessionStore) {
+	userHandler := &handler.UserHandler{Client: client}
 	// Route login harus di luar middleware RequireLoginAPI
-	e.POST("/ajax/sijiden/login", handler.Login(client, store), middleware.RequireCSRF(store))
+	sijiden := e.Group("/ajax/sijiden")
+	sijiden.POST("/login", handler.Login(client, store), middleware.RequireCSRF(store))
+
+	sijiden.GET("/users/count", userHandler.CountUsers)
 
 	// Hanya route yang sudah butuh login dikelompokkan ke sini
-	api := e.Group("/ajax", middleware.RequireLoginAPI(store))
-	api.GET("/user", handler.GetUsers(client))
+	ajax := e.Group("/ajax", middleware.RequireLoginAPI(store))
+	ajax.GET("/user", handler.GetUsers(client))
 
 	// sijiden := api.Group("/sijiden")
 	// tambahkan route lain di sini yang butuh login

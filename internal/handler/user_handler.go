@@ -25,6 +25,18 @@ type CreateUserRequest struct {
 	PhoneNumber string `json:"phone_number"`
 }
 
+func (h *UserHandler) CountUsers(c echo.Context) error {
+	count, err := h.Client.User.Query().Count(context.Background())
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"count": count,
+	})
+}
+
 // POST /users
 func (h *UserHandler) Create(c echo.Context) error {
 	var req CreateUserRequest

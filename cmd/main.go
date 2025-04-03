@@ -1,6 +1,9 @@
 package main
 
 import (
+	"os"
+	"strconv"
+
 	"github.com/duaminggu/sijiden/internal/db"
 	routes "github.com/duaminggu/sijiden/internal/router"
 	sessionstore "github.com/duaminggu/sijiden/internal/session"
@@ -22,8 +25,18 @@ func main() {
 	routes.RegisterAjaxRoutes(e, client, store)
 	routes.RegisterComponentRoutes(e)
 
-	e.Renderer = template.SijidenRenderer()
+	isDev := os.Getenv("IS_DEV")
+
+	e.Renderer = template.SijidenRenderer(stringToBoolWithDefault(isDev, false))
 	e.Static("/static", "static")
 
 	e.Logger.Fatal(e.Start(":1234"))
+}
+
+func stringToBoolWithDefault(s string, defaultValue bool) bool {
+	value, err := strconv.ParseBool(s)
+	if err != nil {
+		return defaultValue
+	}
+	return value
 }

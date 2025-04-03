@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/duaminggu/sijiden/internal/session"
 
@@ -30,16 +31,25 @@ func RequireLoginAPI(store *session.SessionStore) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			cookie, err := c.Cookie("session_id")
-			if err != nil || cookie.Value == "" {
+			if err != nil {
 				return c.JSON(http.StatusUnauthorized, echo.Map{"error": "unauthorized"})
 			}
 
-			if userID, ok := store.Get(cookie.Value); ok && userID > 0 {
-				c.Set("user_id", userID)
-				return next(c)
+			userID, ok := store.Get(cookie.Value)
+			if !ok {
+				return c.JSON(http.StatusUnauthorized, echo.Map{"error": "unauthorized"})
 			}
 
-			return c.JSON(http.StatusUnauthorized, echo.Map{"error": "unauthorized"})
+			c.Set("user_id", userID)
+
+			// Inject roles
+			rolesStr, ok := store.GetValue(cookie.Value, "roles")
+			if ok {
+				roleList := strings.Split(rolesStr, ",")
+				c.Set("roles", roleList)
+			}
+
+			return next(c)
 		}
 	}
 }

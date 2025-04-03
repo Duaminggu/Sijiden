@@ -4,15 +4,46 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
+    <title>Dashboard - Sijiden</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="/static/lib/alpine-component.js"></script>
+    <script src="/static/lib/alpine-page-active.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+    <style>
+        [x-cloak] {
+            display: none;
+        }
+    </style>
 </head>
 
-<body class="ui middle aligned center aligned grid" style="height: 100vh; background-color: #f7f7f7;">
-    <h1 class="ui header">
-        Dashboard page
-    </h1>
+<body>
+    <div x-data x-cloak x-component="/sijiden/components/navbar" x-page-active="'dashboard'">
+    </div>
+
+    <div class="ui container" style="margin-top: 60px;">
+        <h1 class="ui header">
+            Dashboard
+        </h1>
+        <div class="ui four column stackable grid">
+            <div class="column">
+                <div class="ui segments" x-data="userCounter()" x-init="load()">
+                    <div class="ui segment">
+                        <div class="ui statistic">
+                            <div class="value" x-text="count">
+                                <!-- Fallback value while loading -->
+                                ...
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui secondary segment">
+                        <p><a href="#">Users <i class="chevron right icon"></i></a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>
