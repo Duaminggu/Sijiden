@@ -18,6 +18,10 @@ type CreateRoleRequest struct {
 	Description string `json:"description"`
 }
 
+func CreateRole(c echo.Context) error {
+
+}
+
 // POST /roles
 func (h *RoleHandler) Create(c echo.Context) error {
 	var req CreateRoleRequest

@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -27,11 +28,12 @@ func RequireLoginView(store *session.SessionStore) echo.MiddlewareFunc {
 	}
 }
 
-func RequireLoginAPI(store *session.SessionStore) echo.MiddlewareFunc {
+func RequireLoginAjax(store *session.SessionStore) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			cookie, err := c.Cookie("session_id")
-			if err != nil {
+			if err != nil || cookie.Value == "" {
+				log.Printf("Missing or empty session cookie")
 				return c.JSON(http.StatusUnauthorized, echo.Map{"error": "unauthorized"})
 			}
 
@@ -39,12 +41,11 @@ func RequireLoginAPI(store *session.SessionStore) echo.MiddlewareFunc {
 			if !ok {
 				return c.JSON(http.StatusUnauthorized, echo.Map{"error": "unauthorized"})
 			}
-
 			c.Set("user_id", userID)
 
 			// Inject roles
 			rolesStr, ok := store.GetValue(cookie.Value, "roles")
-			if ok {
+			if ok && rolesStr != "" {
 				roleList := strings.Split(rolesStr, ",")
 				c.Set("roles", roleList)
 			}
