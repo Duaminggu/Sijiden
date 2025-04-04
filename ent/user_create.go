@@ -57,6 +57,38 @@ func (uc *UserCreate) SetPhoneNumber(s string) *UserCreate {
 	return uc
 }
 
+// SetPictureURL sets the "picture_url" field.
+func (uc *UserCreate) SetPictureURL(s string) *UserCreate {
+	uc.mutation.SetPictureURL(s)
+	return uc
+}
+
+// SetLastIP sets the "last_ip" field.
+func (uc *UserCreate) SetLastIP(s string) *UserCreate {
+	uc.mutation.SetLastIP(s)
+	return uc
+}
+
+// SetLastLoginAt sets the "last_login_at" field.
+func (uc *UserCreate) SetLastLoginAt(t time.Time) *UserCreate {
+	uc.mutation.SetLastLoginAt(t)
+	return uc
+}
+
+// SetLoginsCount sets the "logins_count" field.
+func (uc *UserCreate) SetLoginsCount(i int) *UserCreate {
+	uc.mutation.SetLoginsCount(i)
+	return uc
+}
+
+// SetNillableLoginsCount sets the "logins_count" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLoginsCount(i *int) *UserCreate {
+	if i != nil {
+		uc.SetLoginsCount(*i)
+	}
+	return uc
+}
+
 // SetEmailVerified sets the "email_verified" field.
 func (uc *UserCreate) SetEmailVerified(b bool) *UserCreate {
 	uc.mutation.SetEmailVerified(b)
@@ -163,6 +195,10 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (uc *UserCreate) defaults() {
+	if _, ok := uc.mutation.LoginsCount(); !ok {
+		v := user.DefaultLoginsCount
+		uc.mutation.SetLoginsCount(v)
+	}
 	if _, ok := uc.mutation.EmailVerified(); !ok {
 		v := user.DefaultEmailVerified
 		uc.mutation.SetEmailVerified(v)
@@ -215,6 +251,18 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.PhoneNumber(); !ok {
 		return &ValidationError{Name: "phone_number", err: errors.New(`ent: missing required field "User.phone_number"`)}
+	}
+	if _, ok := uc.mutation.PictureURL(); !ok {
+		return &ValidationError{Name: "picture_url", err: errors.New(`ent: missing required field "User.picture_url"`)}
+	}
+	if _, ok := uc.mutation.LastIP(); !ok {
+		return &ValidationError{Name: "last_ip", err: errors.New(`ent: missing required field "User.last_ip"`)}
+	}
+	if _, ok := uc.mutation.LastLoginAt(); !ok {
+		return &ValidationError{Name: "last_login_at", err: errors.New(`ent: missing required field "User.last_login_at"`)}
+	}
+	if _, ok := uc.mutation.LoginsCount(); !ok {
+		return &ValidationError{Name: "logins_count", err: errors.New(`ent: missing required field "User.logins_count"`)}
 	}
 	if _, ok := uc.mutation.EmailVerified(); !ok {
 		return &ValidationError{Name: "email_verified", err: errors.New(`ent: missing required field "User.email_verified"`)}
@@ -277,6 +325,22 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.PhoneNumber(); ok {
 		_spec.SetField(user.FieldPhoneNumber, field.TypeString, value)
 		_node.PhoneNumber = value
+	}
+	if value, ok := uc.mutation.PictureURL(); ok {
+		_spec.SetField(user.FieldPictureURL, field.TypeString, value)
+		_node.PictureURL = value
+	}
+	if value, ok := uc.mutation.LastIP(); ok {
+		_spec.SetField(user.FieldLastIP, field.TypeString, value)
+		_node.LastIP = value
+	}
+	if value, ok := uc.mutation.LastLoginAt(); ok {
+		_spec.SetField(user.FieldLastLoginAt, field.TypeTime, value)
+		_node.LastLoginAt = value
+	}
+	if value, ok := uc.mutation.LoginsCount(); ok {
+		_spec.SetField(user.FieldLoginsCount, field.TypeInt, value)
+		_node.LoginsCount = value
 	}
 	if value, ok := uc.mutation.EmailVerified(); ok {
 		_spec.SetField(user.FieldEmailVerified, field.TypeBool, value)

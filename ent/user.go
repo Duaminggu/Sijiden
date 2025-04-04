@@ -29,6 +29,14 @@ type User struct {
 	LastName string `json:"last_name,omitempty"`
 	// PhoneNumber holds the value of the "phone_number" field.
 	PhoneNumber string `json:"phone_number,omitempty"`
+	// PictureURL holds the value of the "picture_url" field.
+	PictureURL string `json:"picture_url,omitempty"`
+	// LastIP holds the value of the "last_ip" field.
+	LastIP string `json:"last_ip,omitempty"`
+	// LastLoginAt holds the value of the "last_login_at" field.
+	LastLoginAt time.Time `json:"last_login_at,omitempty"`
+	// LoginsCount holds the value of the "logins_count" field.
+	LoginsCount int `json:"logins_count,omitempty"`
 	// EmailVerified holds the value of the "email_verified" field.
 	EmailVerified bool `json:"email_verified,omitempty"`
 	// PhoneVerified holds the value of the "phone_verified" field.
@@ -68,11 +76,11 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldEmailVerified, user.FieldPhoneVerified:
 			values[i] = new(sql.NullBool)
-		case user.FieldID:
+		case user.FieldID, user.FieldLoginsCount:
 			values[i] = new(sql.NullInt64)
-		case user.FieldUsername, user.FieldEmail, user.FieldPassword, user.FieldFirstName, user.FieldLastName, user.FieldPhoneNumber:
+		case user.FieldUsername, user.FieldEmail, user.FieldPassword, user.FieldFirstName, user.FieldLastName, user.FieldPhoneNumber, user.FieldPictureURL, user.FieldLastIP:
 			values[i] = new(sql.NullString)
-		case user.FieldCreatedAt, user.FieldUpdatedAt:
+		case user.FieldLastLoginAt, user.FieldCreatedAt, user.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -130,6 +138,30 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field phone_number", values[i])
 			} else if value.Valid {
 				u.PhoneNumber = value.String
+			}
+		case user.FieldPictureURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field picture_url", values[i])
+			} else if value.Valid {
+				u.PictureURL = value.String
+			}
+		case user.FieldLastIP:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field last_ip", values[i])
+			} else if value.Valid {
+				u.LastIP = value.String
+			}
+		case user.FieldLastLoginAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field last_login_at", values[i])
+			} else if value.Valid {
+				u.LastLoginAt = value.Time
+			}
+		case user.FieldLoginsCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field logins_count", values[i])
+			} else if value.Valid {
+				u.LoginsCount = int(value.Int64)
 			}
 		case user.FieldEmailVerified:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -213,6 +245,18 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("phone_number=")
 	builder.WriteString(u.PhoneNumber)
+	builder.WriteString(", ")
+	builder.WriteString("picture_url=")
+	builder.WriteString(u.PictureURL)
+	builder.WriteString(", ")
+	builder.WriteString("last_ip=")
+	builder.WriteString(u.LastIP)
+	builder.WriteString(", ")
+	builder.WriteString("last_login_at=")
+	builder.WriteString(u.LastLoginAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("logins_count=")
+	builder.WriteString(fmt.Sprintf("%v", u.LoginsCount))
 	builder.WriteString(", ")
 	builder.WriteString("email_verified=")
 	builder.WriteString(fmt.Sprintf("%v", u.EmailVerified))

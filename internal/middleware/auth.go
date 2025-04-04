@@ -72,3 +72,28 @@ func RequireCSRF(store *session.SessionStore) echo.MiddlewareFunc {
 		}
 	}
 }
+
+func RequireRole(roleName string, store *session.SessionStore) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			cookie, err := c.Cookie("session_id")
+			if err != nil || cookie.Value == "" {
+				return c.Redirect(302, "/sijiden/auth")
+			}
+
+			rolesStr, ok := store.GetValue(cookie.Value, "roles")
+			if !ok {
+				return c.Redirect(302, "/sijiden/auth")
+			}
+
+			roles := strings.Split(rolesStr, ",")
+			for _, role := range roles {
+				if role == roleName {
+					return next(c)
+				}
+			}
+
+			return c.String(http.StatusForbidden, "Forbidden: You don't have the required role.")
+		}
+	}
+}

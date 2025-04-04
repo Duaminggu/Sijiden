@@ -1,53 +1,35 @@
 package routes
 
 import (
-	"net/http"
-
+	"github.com/duaminggu/sijiden/ent"
+	"github.com/duaminggu/sijiden/internal/handler/view"
 	"github.com/duaminggu/sijiden/internal/middleware"
 	"github.com/duaminggu/sijiden/internal/session"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
-func RegisterWebRoutes(e *echo.Echo, store *session.SessionStore) {
+func RegisterWebRoutes(e *echo.Echo, client *ent.Client, store *session.SessionStore) {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(200, "Sijiden App is running 🚀")
 	})
 
-	admin := e.Group("/sijiden")
+	sijidenGroup := e.Group("/sijiden")
+	sijidenGroup.Use(middleware.RequireLoginView(store))
+	sijidenGroup.Use(middleware.RequireRole("admin", store))
 
-	admin.GET("/auth", func(c echo.Context) error {
-		sessionID := uuid.NewString()
-		csrfToken := uuid.NewString()
-		store.SetCSRF(sessionID, csrfToken)
+	sijidenGroup.GET("", view.DashboardPage(store))
 
-		c.SetCookie(&http.Cookie{
-			Name:     "session_id",
-			Value:    sessionID,
-			Path:     "/",
-			HttpOnly: true,
-			Secure:   false,
-		})
+	sijidenUserGroup := sijidenGroup.Group("/users")
+	sijidenUserGroup.GET("", view.UserListPage(store))
+	sijidenUserGroup.GET("/create", view.UserCreatePage(store))
+	sijidenUserGroup.GET("/update", view.UserUpdatePage(store))
 
-		return c.Render(200, "sijiden/auth.html", echo.Map{
-			"csrf_token": csrfToken,
-		})
-	})
+	sijidenRoleGroup := sijidenGroup.Group("/roles")
 
-	admin.GET("", func(c echo.Context) error {
-		userID := c.Get("user_id")
-		if userID == nil {
-			return c.Redirect(302, "/sijiden/auth")
-		}
+	sijidenRoleGroup.GET("", view.RoleListPage(store))
+	sijidenRoleGroup.GET("/create", view.RoleListPage(store))
+	sijidenRoleGroup.GET("/update", view.RoleListPage(store))
 
-		_, err := c.Cookie("session_id")
-		if err != nil {
-			return c.Redirect(302, "/sijiden/auth")
-		}
-
-		return c.Render(200, "sijiden/dashboard.html", echo.Map{
-			"username": "User",
-		})
-	}, middleware.RequireLoginView(store))
+	e.GET("/auth", view.AuthPage(store))
 
 }

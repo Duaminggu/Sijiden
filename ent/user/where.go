@@ -85,6 +85,26 @@ func PhoneNumber(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldPhoneNumber, v))
 }
 
+// PictureURL applies equality check predicate on the "picture_url" field. It's identical to PictureURLEQ.
+func PictureURL(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPictureURL, v))
+}
+
+// LastIP applies equality check predicate on the "last_ip" field. It's identical to LastIPEQ.
+func LastIP(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLastIP, v))
+}
+
+// LastLoginAt applies equality check predicate on the "last_login_at" field. It's identical to LastLoginAtEQ.
+func LastLoginAt(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLastLoginAt, v))
+}
+
+// LoginsCount applies equality check predicate on the "logins_count" field. It's identical to LoginsCountEQ.
+func LoginsCount(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLoginsCount, v))
+}
+
 // EmailVerified applies equality check predicate on the "email_verified" field. It's identical to EmailVerifiedEQ.
 func EmailVerified(v bool) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldEmailVerified, v))
@@ -493,6 +513,216 @@ func PhoneNumberEqualFold(v string) predicate.User {
 // PhoneNumberContainsFold applies the ContainsFold predicate on the "phone_number" field.
 func PhoneNumberContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldPhoneNumber, v))
+}
+
+// PictureURLEQ applies the EQ predicate on the "picture_url" field.
+func PictureURLEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPictureURL, v))
+}
+
+// PictureURLNEQ applies the NEQ predicate on the "picture_url" field.
+func PictureURLNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldPictureURL, v))
+}
+
+// PictureURLIn applies the In predicate on the "picture_url" field.
+func PictureURLIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldPictureURL, vs...))
+}
+
+// PictureURLNotIn applies the NotIn predicate on the "picture_url" field.
+func PictureURLNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldPictureURL, vs...))
+}
+
+// PictureURLGT applies the GT predicate on the "picture_url" field.
+func PictureURLGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldPictureURL, v))
+}
+
+// PictureURLGTE applies the GTE predicate on the "picture_url" field.
+func PictureURLGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldPictureURL, v))
+}
+
+// PictureURLLT applies the LT predicate on the "picture_url" field.
+func PictureURLLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldPictureURL, v))
+}
+
+// PictureURLLTE applies the LTE predicate on the "picture_url" field.
+func PictureURLLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldPictureURL, v))
+}
+
+// PictureURLContains applies the Contains predicate on the "picture_url" field.
+func PictureURLContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldPictureURL, v))
+}
+
+// PictureURLHasPrefix applies the HasPrefix predicate on the "picture_url" field.
+func PictureURLHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldPictureURL, v))
+}
+
+// PictureURLHasSuffix applies the HasSuffix predicate on the "picture_url" field.
+func PictureURLHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldPictureURL, v))
+}
+
+// PictureURLEqualFold applies the EqualFold predicate on the "picture_url" field.
+func PictureURLEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldPictureURL, v))
+}
+
+// PictureURLContainsFold applies the ContainsFold predicate on the "picture_url" field.
+func PictureURLContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldPictureURL, v))
+}
+
+// LastIPEQ applies the EQ predicate on the "last_ip" field.
+func LastIPEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLastIP, v))
+}
+
+// LastIPNEQ applies the NEQ predicate on the "last_ip" field.
+func LastIPNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLastIP, v))
+}
+
+// LastIPIn applies the In predicate on the "last_ip" field.
+func LastIPIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLastIP, vs...))
+}
+
+// LastIPNotIn applies the NotIn predicate on the "last_ip" field.
+func LastIPNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLastIP, vs...))
+}
+
+// LastIPGT applies the GT predicate on the "last_ip" field.
+func LastIPGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldLastIP, v))
+}
+
+// LastIPGTE applies the GTE predicate on the "last_ip" field.
+func LastIPGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldLastIP, v))
+}
+
+// LastIPLT applies the LT predicate on the "last_ip" field.
+func LastIPLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldLastIP, v))
+}
+
+// LastIPLTE applies the LTE predicate on the "last_ip" field.
+func LastIPLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldLastIP, v))
+}
+
+// LastIPContains applies the Contains predicate on the "last_ip" field.
+func LastIPContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldLastIP, v))
+}
+
+// LastIPHasPrefix applies the HasPrefix predicate on the "last_ip" field.
+func LastIPHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldLastIP, v))
+}
+
+// LastIPHasSuffix applies the HasSuffix predicate on the "last_ip" field.
+func LastIPHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldLastIP, v))
+}
+
+// LastIPEqualFold applies the EqualFold predicate on the "last_ip" field.
+func LastIPEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldLastIP, v))
+}
+
+// LastIPContainsFold applies the ContainsFold predicate on the "last_ip" field.
+func LastIPContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldLastIP, v))
+}
+
+// LastLoginAtEQ applies the EQ predicate on the "last_login_at" field.
+func LastLoginAtEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLastLoginAt, v))
+}
+
+// LastLoginAtNEQ applies the NEQ predicate on the "last_login_at" field.
+func LastLoginAtNEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLastLoginAt, v))
+}
+
+// LastLoginAtIn applies the In predicate on the "last_login_at" field.
+func LastLoginAtIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLastLoginAt, vs...))
+}
+
+// LastLoginAtNotIn applies the NotIn predicate on the "last_login_at" field.
+func LastLoginAtNotIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLastLoginAt, vs...))
+}
+
+// LastLoginAtGT applies the GT predicate on the "last_login_at" field.
+func LastLoginAtGT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGT(FieldLastLoginAt, v))
+}
+
+// LastLoginAtGTE applies the GTE predicate on the "last_login_at" field.
+func LastLoginAtGTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldLastLoginAt, v))
+}
+
+// LastLoginAtLT applies the LT predicate on the "last_login_at" field.
+func LastLoginAtLT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLT(FieldLastLoginAt, v))
+}
+
+// LastLoginAtLTE applies the LTE predicate on the "last_login_at" field.
+func LastLoginAtLTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldLastLoginAt, v))
+}
+
+// LoginsCountEQ applies the EQ predicate on the "logins_count" field.
+func LoginsCountEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLoginsCount, v))
+}
+
+// LoginsCountNEQ applies the NEQ predicate on the "logins_count" field.
+func LoginsCountNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLoginsCount, v))
+}
+
+// LoginsCountIn applies the In predicate on the "logins_count" field.
+func LoginsCountIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLoginsCount, vs...))
+}
+
+// LoginsCountNotIn applies the NotIn predicate on the "logins_count" field.
+func LoginsCountNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLoginsCount, vs...))
+}
+
+// LoginsCountGT applies the GT predicate on the "logins_count" field.
+func LoginsCountGT(v int) predicate.User {
+	return predicate.User(sql.FieldGT(FieldLoginsCount, v))
+}
+
+// LoginsCountGTE applies the GTE predicate on the "logins_count" field.
+func LoginsCountGTE(v int) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldLoginsCount, v))
+}
+
+// LoginsCountLT applies the LT predicate on the "logins_count" field.
+func LoginsCountLT(v int) predicate.User {
+	return predicate.User(sql.FieldLT(FieldLoginsCount, v))
+}
+
+// LoginsCountLTE applies the LTE predicate on the "logins_count" field.
+func LoginsCountLTE(v int) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldLoginsCount, v))
 }
 
 // EmailVerifiedEQ applies the EQ predicate on the "email_verified" field.

@@ -678,6 +678,11 @@ type UserMutation struct {
 	first_name        *string
 	last_name         *string
 	phone_number      *string
+	picture_url       *string
+	last_ip           *string
+	last_login_at     *time.Time
+	logins_count      *int
+	addlogins_count   *int
 	email_verified    *bool
 	phone_verified    *bool
 	created_at        *time.Time
@@ -1005,6 +1010,170 @@ func (m *UserMutation) ResetPhoneNumber() {
 	m.phone_number = nil
 }
 
+// SetPictureURL sets the "picture_url" field.
+func (m *UserMutation) SetPictureURL(s string) {
+	m.picture_url = &s
+}
+
+// PictureURL returns the value of the "picture_url" field in the mutation.
+func (m *UserMutation) PictureURL() (r string, exists bool) {
+	v := m.picture_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPictureURL returns the old "picture_url" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldPictureURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPictureURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPictureURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPictureURL: %w", err)
+	}
+	return oldValue.PictureURL, nil
+}
+
+// ResetPictureURL resets all changes to the "picture_url" field.
+func (m *UserMutation) ResetPictureURL() {
+	m.picture_url = nil
+}
+
+// SetLastIP sets the "last_ip" field.
+func (m *UserMutation) SetLastIP(s string) {
+	m.last_ip = &s
+}
+
+// LastIP returns the value of the "last_ip" field in the mutation.
+func (m *UserMutation) LastIP() (r string, exists bool) {
+	v := m.last_ip
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastIP returns the old "last_ip" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLastIP(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastIP is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastIP requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastIP: %w", err)
+	}
+	return oldValue.LastIP, nil
+}
+
+// ResetLastIP resets all changes to the "last_ip" field.
+func (m *UserMutation) ResetLastIP() {
+	m.last_ip = nil
+}
+
+// SetLastLoginAt sets the "last_login_at" field.
+func (m *UserMutation) SetLastLoginAt(t time.Time) {
+	m.last_login_at = &t
+}
+
+// LastLoginAt returns the value of the "last_login_at" field in the mutation.
+func (m *UserMutation) LastLoginAt() (r time.Time, exists bool) {
+	v := m.last_login_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastLoginAt returns the old "last_login_at" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLastLoginAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastLoginAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastLoginAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastLoginAt: %w", err)
+	}
+	return oldValue.LastLoginAt, nil
+}
+
+// ResetLastLoginAt resets all changes to the "last_login_at" field.
+func (m *UserMutation) ResetLastLoginAt() {
+	m.last_login_at = nil
+}
+
+// SetLoginsCount sets the "logins_count" field.
+func (m *UserMutation) SetLoginsCount(i int) {
+	m.logins_count = &i
+	m.addlogins_count = nil
+}
+
+// LoginsCount returns the value of the "logins_count" field in the mutation.
+func (m *UserMutation) LoginsCount() (r int, exists bool) {
+	v := m.logins_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLoginsCount returns the old "logins_count" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLoginsCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLoginsCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLoginsCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLoginsCount: %w", err)
+	}
+	return oldValue.LoginsCount, nil
+}
+
+// AddLoginsCount adds i to the "logins_count" field.
+func (m *UserMutation) AddLoginsCount(i int) {
+	if m.addlogins_count != nil {
+		*m.addlogins_count += i
+	} else {
+		m.addlogins_count = &i
+	}
+}
+
+// AddedLoginsCount returns the value that was added to the "logins_count" field in this mutation.
+func (m *UserMutation) AddedLoginsCount() (r int, exists bool) {
+	v := m.addlogins_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLoginsCount resets all changes to the "logins_count" field.
+func (m *UserMutation) ResetLoginsCount() {
+	m.logins_count = nil
+	m.addlogins_count = nil
+}
+
 // SetEmailVerified sets the "email_verified" field.
 func (m *UserMutation) SetEmailVerified(b bool) {
 	m.email_verified = &b
@@ -1237,7 +1406,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 14)
 	if m.username != nil {
 		fields = append(fields, user.FieldUsername)
 	}
@@ -1255,6 +1424,18 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.phone_number != nil {
 		fields = append(fields, user.FieldPhoneNumber)
+	}
+	if m.picture_url != nil {
+		fields = append(fields, user.FieldPictureURL)
+	}
+	if m.last_ip != nil {
+		fields = append(fields, user.FieldLastIP)
+	}
+	if m.last_login_at != nil {
+		fields = append(fields, user.FieldLastLoginAt)
+	}
+	if m.logins_count != nil {
+		fields = append(fields, user.FieldLoginsCount)
 	}
 	if m.email_verified != nil {
 		fields = append(fields, user.FieldEmailVerified)
@@ -1288,6 +1469,14 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.LastName()
 	case user.FieldPhoneNumber:
 		return m.PhoneNumber()
+	case user.FieldPictureURL:
+		return m.PictureURL()
+	case user.FieldLastIP:
+		return m.LastIP()
+	case user.FieldLastLoginAt:
+		return m.LastLoginAt()
+	case user.FieldLoginsCount:
+		return m.LoginsCount()
 	case user.FieldEmailVerified:
 		return m.EmailVerified()
 	case user.FieldPhoneVerified:
@@ -1317,6 +1506,14 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldLastName(ctx)
 	case user.FieldPhoneNumber:
 		return m.OldPhoneNumber(ctx)
+	case user.FieldPictureURL:
+		return m.OldPictureURL(ctx)
+	case user.FieldLastIP:
+		return m.OldLastIP(ctx)
+	case user.FieldLastLoginAt:
+		return m.OldLastLoginAt(ctx)
+	case user.FieldLoginsCount:
+		return m.OldLoginsCount(ctx)
 	case user.FieldEmailVerified:
 		return m.OldEmailVerified(ctx)
 	case user.FieldPhoneVerified:
@@ -1376,6 +1573,34 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPhoneNumber(v)
 		return nil
+	case user.FieldPictureURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPictureURL(v)
+		return nil
+	case user.FieldLastIP:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastIP(v)
+		return nil
+	case user.FieldLastLoginAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastLoginAt(v)
+		return nil
+	case user.FieldLoginsCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLoginsCount(v)
+		return nil
 	case user.FieldEmailVerified:
 		v, ok := value.(bool)
 		if !ok {
@@ -1411,13 +1636,21 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *UserMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addlogins_count != nil {
+		fields = append(fields, user.FieldLoginsCount)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case user.FieldLoginsCount:
+		return m.AddedLoginsCount()
+	}
 	return nil, false
 }
 
@@ -1426,6 +1659,13 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *UserMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case user.FieldLoginsCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLoginsCount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown User numeric field %s", name)
 }
@@ -1470,6 +1710,18 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldPhoneNumber:
 		m.ResetPhoneNumber()
+		return nil
+	case user.FieldPictureURL:
+		m.ResetPictureURL()
+		return nil
+	case user.FieldLastIP:
+		m.ResetLastIP()
+		return nil
+	case user.FieldLastLoginAt:
+		m.ResetLastLoginAt()
+		return nil
+	case user.FieldLoginsCount:
+		m.ResetLoginsCount()
 		return nil
 	case user.FieldEmailVerified:
 		m.ResetEmailVerified()

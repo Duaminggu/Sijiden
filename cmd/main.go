@@ -21,7 +21,7 @@ func main() {
 
 	e := echo.New()
 	// Register routes
-	routes.RegisterWebRoutes(e, store)
+	routes.RegisterWebRoutes(e, client, store)
 	routes.RegisterAjaxRoutes(e, client, store)
 	routes.RegisterComponentRoutes(e)
 

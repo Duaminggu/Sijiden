@@ -26,6 +26,14 @@ const (
 	FieldLastName = "last_name"
 	// FieldPhoneNumber holds the string denoting the phone_number field in the database.
 	FieldPhoneNumber = "phone_number"
+	// FieldPictureURL holds the string denoting the picture_url field in the database.
+	FieldPictureURL = "picture_url"
+	// FieldLastIP holds the string denoting the last_ip field in the database.
+	FieldLastIP = "last_ip"
+	// FieldLastLoginAt holds the string denoting the last_login_at field in the database.
+	FieldLastLoginAt = "last_login_at"
+	// FieldLoginsCount holds the string denoting the logins_count field in the database.
+	FieldLoginsCount = "logins_count"
 	// FieldEmailVerified holds the string denoting the email_verified field in the database.
 	FieldEmailVerified = "email_verified"
 	// FieldPhoneVerified holds the string denoting the phone_verified field in the database.
@@ -56,6 +64,10 @@ var Columns = []string{
 	FieldFirstName,
 	FieldLastName,
 	FieldPhoneNumber,
+	FieldPictureURL,
+	FieldLastIP,
+	FieldLastLoginAt,
+	FieldLoginsCount,
 	FieldEmailVerified,
 	FieldPhoneVerified,
 	FieldCreatedAt,
@@ -79,6 +91,8 @@ var (
 	EmailValidator func(string) error
 	// PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	PasswordValidator func(string) error
+	// DefaultLoginsCount holds the default value on creation for the "logins_count" field.
+	DefaultLoginsCount int
 	// DefaultEmailVerified holds the default value on creation for the "email_verified" field.
 	DefaultEmailVerified bool
 	// DefaultPhoneVerified holds the default value on creation for the "phone_verified" field.
@@ -127,6 +141,26 @@ func ByLastName(opts ...sql.OrderTermOption) OrderOption {
 // ByPhoneNumber orders the results by the phone_number field.
 func ByPhoneNumber(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPhoneNumber, opts...).ToFunc()
+}
+
+// ByPictureURL orders the results by the picture_url field.
+func ByPictureURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPictureURL, opts...).ToFunc()
+}
+
+// ByLastIP orders the results by the last_ip field.
+func ByLastIP(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastIP, opts...).ToFunc()
+}
+
+// ByLastLoginAt orders the results by the last_login_at field.
+func ByLastLoginAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastLoginAt, opts...).ToFunc()
+}
+
+// ByLoginsCount orders the results by the logins_count field.
+func ByLoginsCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLoginsCount, opts...).ToFunc()
 }
 
 // ByEmailVerified orders the results by the email_verified field.

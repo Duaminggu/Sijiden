@@ -113,6 +113,69 @@ func (uu *UserUpdate) SetNillablePhoneNumber(s *string) *UserUpdate {
 	return uu
 }
 
+// SetPictureURL sets the "picture_url" field.
+func (uu *UserUpdate) SetPictureURL(s string) *UserUpdate {
+	uu.mutation.SetPictureURL(s)
+	return uu
+}
+
+// SetNillablePictureURL sets the "picture_url" field if the given value is not nil.
+func (uu *UserUpdate) SetNillablePictureURL(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetPictureURL(*s)
+	}
+	return uu
+}
+
+// SetLastIP sets the "last_ip" field.
+func (uu *UserUpdate) SetLastIP(s string) *UserUpdate {
+	uu.mutation.SetLastIP(s)
+	return uu
+}
+
+// SetNillableLastIP sets the "last_ip" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLastIP(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetLastIP(*s)
+	}
+	return uu
+}
+
+// SetLastLoginAt sets the "last_login_at" field.
+func (uu *UserUpdate) SetLastLoginAt(t time.Time) *UserUpdate {
+	uu.mutation.SetLastLoginAt(t)
+	return uu
+}
+
+// SetNillableLastLoginAt sets the "last_login_at" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLastLoginAt(t *time.Time) *UserUpdate {
+	if t != nil {
+		uu.SetLastLoginAt(*t)
+	}
+	return uu
+}
+
+// SetLoginsCount sets the "logins_count" field.
+func (uu *UserUpdate) SetLoginsCount(i int) *UserUpdate {
+	uu.mutation.ResetLoginsCount()
+	uu.mutation.SetLoginsCount(i)
+	return uu
+}
+
+// SetNillableLoginsCount sets the "logins_count" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLoginsCount(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetLoginsCount(*i)
+	}
+	return uu
+}
+
+// AddLoginsCount adds i to the "logins_count" field.
+func (uu *UserUpdate) AddLoginsCount(i int) *UserUpdate {
+	uu.mutation.AddLoginsCount(i)
+	return uu
+}
+
 // SetEmailVerified sets the "email_verified" field.
 func (uu *UserUpdate) SetEmailVerified(b bool) *UserUpdate {
 	uu.mutation.SetEmailVerified(b)
@@ -288,6 +351,21 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.PhoneNumber(); ok {
 		_spec.SetField(user.FieldPhoneNumber, field.TypeString, value)
 	}
+	if value, ok := uu.mutation.PictureURL(); ok {
+		_spec.SetField(user.FieldPictureURL, field.TypeString, value)
+	}
+	if value, ok := uu.mutation.LastIP(); ok {
+		_spec.SetField(user.FieldLastIP, field.TypeString, value)
+	}
+	if value, ok := uu.mutation.LastLoginAt(); ok {
+		_spec.SetField(user.FieldLastLoginAt, field.TypeTime, value)
+	}
+	if value, ok := uu.mutation.LoginsCount(); ok {
+		_spec.SetField(user.FieldLoginsCount, field.TypeInt, value)
+	}
+	if value, ok := uu.mutation.AddedLoginsCount(); ok {
+		_spec.AddField(user.FieldLoginsCount, field.TypeInt, value)
+	}
 	if value, ok := uu.mutation.EmailVerified(); ok {
 		_spec.SetField(user.FieldEmailVerified, field.TypeBool, value)
 	}
@@ -446,6 +524,69 @@ func (uuo *UserUpdateOne) SetNillablePhoneNumber(s *string) *UserUpdateOne {
 	if s != nil {
 		uuo.SetPhoneNumber(*s)
 	}
+	return uuo
+}
+
+// SetPictureURL sets the "picture_url" field.
+func (uuo *UserUpdateOne) SetPictureURL(s string) *UserUpdateOne {
+	uuo.mutation.SetPictureURL(s)
+	return uuo
+}
+
+// SetNillablePictureURL sets the "picture_url" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillablePictureURL(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetPictureURL(*s)
+	}
+	return uuo
+}
+
+// SetLastIP sets the "last_ip" field.
+func (uuo *UserUpdateOne) SetLastIP(s string) *UserUpdateOne {
+	uuo.mutation.SetLastIP(s)
+	return uuo
+}
+
+// SetNillableLastIP sets the "last_ip" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLastIP(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetLastIP(*s)
+	}
+	return uuo
+}
+
+// SetLastLoginAt sets the "last_login_at" field.
+func (uuo *UserUpdateOne) SetLastLoginAt(t time.Time) *UserUpdateOne {
+	uuo.mutation.SetLastLoginAt(t)
+	return uuo
+}
+
+// SetNillableLastLoginAt sets the "last_login_at" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLastLoginAt(t *time.Time) *UserUpdateOne {
+	if t != nil {
+		uuo.SetLastLoginAt(*t)
+	}
+	return uuo
+}
+
+// SetLoginsCount sets the "logins_count" field.
+func (uuo *UserUpdateOne) SetLoginsCount(i int) *UserUpdateOne {
+	uuo.mutation.ResetLoginsCount()
+	uuo.mutation.SetLoginsCount(i)
+	return uuo
+}
+
+// SetNillableLoginsCount sets the "logins_count" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLoginsCount(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetLoginsCount(*i)
+	}
+	return uuo
+}
+
+// AddLoginsCount adds i to the "logins_count" field.
+func (uuo *UserUpdateOne) AddLoginsCount(i int) *UserUpdateOne {
+	uuo.mutation.AddLoginsCount(i)
 	return uuo
 }
 
@@ -653,6 +794,21 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.PhoneNumber(); ok {
 		_spec.SetField(user.FieldPhoneNumber, field.TypeString, value)
+	}
+	if value, ok := uuo.mutation.PictureURL(); ok {
+		_spec.SetField(user.FieldPictureURL, field.TypeString, value)
+	}
+	if value, ok := uuo.mutation.LastIP(); ok {
+		_spec.SetField(user.FieldLastIP, field.TypeString, value)
+	}
+	if value, ok := uuo.mutation.LastLoginAt(); ok {
+		_spec.SetField(user.FieldLastLoginAt, field.TypeTime, value)
+	}
+	if value, ok := uuo.mutation.LoginsCount(); ok {
+		_spec.SetField(user.FieldLoginsCount, field.TypeInt, value)
+	}
+	if value, ok := uuo.mutation.AddedLoginsCount(); ok {
+		_spec.AddField(user.FieldLoginsCount, field.TypeInt, value)
 	}
 	if value, ok := uuo.mutation.EmailVerified(); ok {
 		_spec.SetField(user.FieldEmailVerified, field.TypeBool, value)

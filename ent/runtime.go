@@ -44,20 +44,24 @@ func init() {
 	userDescPassword := userFields[2].Descriptor()
 	// user.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	user.PasswordValidator = userDescPassword.Validators[0].(func(string) error)
+	// userDescLoginsCount is the schema descriptor for logins_count field.
+	userDescLoginsCount := userFields[9].Descriptor()
+	// user.DefaultLoginsCount holds the default value on creation for the logins_count field.
+	user.DefaultLoginsCount = userDescLoginsCount.Default.(int)
 	// userDescEmailVerified is the schema descriptor for email_verified field.
-	userDescEmailVerified := userFields[6].Descriptor()
+	userDescEmailVerified := userFields[10].Descriptor()
 	// user.DefaultEmailVerified holds the default value on creation for the email_verified field.
 	user.DefaultEmailVerified = userDescEmailVerified.Default.(bool)
 	// userDescPhoneVerified is the schema descriptor for phone_verified field.
-	userDescPhoneVerified := userFields[7].Descriptor()
+	userDescPhoneVerified := userFields[11].Descriptor()
 	// user.DefaultPhoneVerified holds the default value on creation for the phone_verified field.
 	user.DefaultPhoneVerified = userDescPhoneVerified.Default.(bool)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[8].Descriptor()
+	userDescCreatedAt := userFields[12].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[9].Descriptor()
+	userDescUpdatedAt := userFields[13].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
