@@ -16,10 +16,7 @@ type RoleHandler struct {
 type CreateRoleRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
-}
-
-func CreateRole(c echo.Context) error {
-
+	RedirectUrl string `json:"redirectUrl"`
 }
 
 // POST /roles
@@ -33,6 +30,7 @@ func (h *RoleHandler) Create(c echo.Context) error {
 		Create().
 		SetName(req.Name).
 		SetDescription(req.Description).
+		SetRedirectUrl(req.RedirectUrl).
 		Save(context.Background())
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
@@ -43,11 +41,36 @@ func (h *RoleHandler) Create(c echo.Context) error {
 
 // GET /roles
 func (h *RoleHandler) List(c echo.Context) error {
-	roles, err := h.Client.Role.Query().All(context.Background())
+	roles, err := h.Client.Role.
+		Query().
+		WithUserRoles(). // include relasi user_roles
+		All(context.Background())
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
 	}
-	return c.JSON(http.StatusOK, roles)
+
+	// Siapkan hasil dengan jumlah user
+	result := make([]map[string]interface{}, 0, len(roles))
+	for _, r := range roles {
+		result = append(result, map[string]interface{}{
+			"id":          r.ID,
+			"name":        r.Name,
+			"description": r.Description,
+			"redirectUrl": r.RedirectUrl,
+			"userCount":   len(r.Edges.UserRoles), // hitung jumlah user_roles
+		})
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
+
+func (h *RoleHandler) Detail(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+	r, err := h.Client.Role.Get(context.Background(), id)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, echo.Map{"error": "Role not found"})
+	}
+	return c.JSON(http.StatusOK, r)
 }
 
 // GET /roles/:id
@@ -72,6 +95,7 @@ func (h *RoleHandler) Update(c echo.Context) error {
 		UpdateOneID(id).
 		SetName(req.Name).
 		SetDescription(req.Description).
+		SetRedirectUrl(req.RedirectUrl).
 		Save(context.Background())
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})

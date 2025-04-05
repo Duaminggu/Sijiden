@@ -79,12 +79,12 @@ func RequireRole(roleName string, store *session.SessionStore) echo.MiddlewareFu
 		return func(c echo.Context) error {
 			cookie, err := c.Cookie("session_id")
 			if err != nil || cookie.Value == "" {
-				return c.Redirect(302, "/sijiden/auth")
+				return c.Redirect(302, "/auth")
 			}
 
 			rolesStr, ok := store.GetValue(cookie.Value, "roles")
 			if !ok {
-				return c.Redirect(302, "/sijiden/auth")
+				return c.Redirect(302, "/auth")
 			}
 
 			roles := strings.Split(rolesStr, ",")

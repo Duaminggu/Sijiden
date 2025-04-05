@@ -20,42 +20,67 @@
     <div x-data x-cloak x-component.once="/sijiden/components/navbar" x-page-active="'roles'">
     </div>
 
-    <div class="ui container" style="margin-top: 60px;">
+    <div class="ui container" style="margin-top: 60px;" x-data="roleList">
         <h1 class="ui header">
-            Roles
+            Roles List
         </h1>
-        <a href="#" class="ui button primary"><i class="plus icon"></i> Add New Role</a>
-        <table class="ui celled table">
+        <a href="/sijiden/roles/create" class="ui button primary mini"><i class="plus icon"></i> Add New Role</a>
+        <table class="ui compact celled table">
             <thead>
                 <tr>
+                    <th>ID</th>
                     <th>Name</th>
-                    <th>Email</th>
-                    <th>Roles</th>
-                    <th>#</th>
+                    <th>Description</th>
+                    <th>Redirect URL</th>
+                    <th>Users</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td data-label="Name">James</td>
-                    <td data-label="Age">24</td>
-                    <td data-label="Job">Engineer</td>
-                    <td data-label="action"></td>
-                </tr>
-                <tr>
-                    <td data-label="Name">Jill</td>
-                    <td data-label="Age">26</td>
-                    <td data-label="Job"></td>
-                    <td data-label="Action"></td>
-                </tr>
-                <tr>
-                    <td data-label="Name">Elyse</td>
-                    <td data-label="Age">24</td>
-                    <td data-label="Job"></td>
-                    <td data-label="Action"></td>
-                </tr>
+                <template x-for="role in roles" :key="role.id">
+                    <tr>
+                        <td x-text="role.id"></td>
+                        <td x-text="role.name"></td>
+                        <td x-text="role.description"></td>
+                        <td x-text="role.redirect_url"></td>
+                        <td x-text="role.userCount"></td>
+                        <td>
+                            <a :href="`/sijiden/roles/${role.id}/detail`" class="ui button mini">Detail</a>
+                            <a :href="`/sijiden/roles/${role.id}/update`" class="ui button mini blue">Edit</a>
+                            <button class="ui button mini red" @click="deleteRole(role.id)">Delete</button>
+                        </td>
+                    </tr>
+                </template>
             </tbody>
         </table>
     </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('roleList', () => ({
+                roles: [],
+                init() {
+                    this.fetchRoles()
+                },
+                fetchRoles() {
+                    fetch('/ajax/sijiden/roles')
+                        .then(res => res.json())
+                        .then(data => this.roles = data)
+                },
+                deleteRole(id) {
+                    if (confirm('Are you sure you want to delete this role?')) {
+                        fetch(`/ajax/sijiden/roles/${id}`, {
+                            method: 'DELETE',
+                        })
+                            .then(res => {
+                                if (res.ok) this.fetchRoles()
+                                else alert('Failed to delete role')
+                            })
+                    }
+                }
+            }))
+        })
+    </script>
 
 </body>
 
