@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard - Sijiden</title>
+    <title>Role List - Sijiden</title>
+    <meta name="csrf-token" content="{{.csrf_token}}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="/static/lib/alpine-component.js"></script>
@@ -42,12 +43,21 @@
                         <td x-text="role.id"></td>
                         <td x-text="role.name"></td>
                         <td x-text="role.description"></td>
-                        <td x-text="role.redirect_url"></td>
+                        <td x-text="role.redirectUrl"></td>
                         <td x-text="role.userCount"></td>
                         <td>
-                            <a :href="`/sijiden/roles/${role.id}/detail`" class="ui button mini">Detail</a>
-                            <a :href="`/sijiden/roles/${role.id}/update`" class="ui button mini blue">Edit</a>
-                            <button class="ui button mini red" @click="deleteRole(role.id)">Delete</button>
+                            <template x-if="role.name !== 'admin'">
+                                <div>
+                                    <a :href="`/sijiden/roles/${role.id}/detail`" class="ui button mini">Detail</a>
+                                    <a :href="`/sijiden/roles/${role.id}/update`" class="ui button mini blue">Edit</a>
+                                    <button class="ui button mini red" @click="deleteRole(role.id)">Delete</button>
+                                </div>
+                            </template>
+                            <template x-if="role.name === 'admin'">
+                                <div>
+                                    <a :href="`/sijiden/roles/${role.id}/detail`" class="ui button mini">Detail</a>
+                                </div>
+                            </template>
                         </td>
                     </tr>
                 </template>
@@ -69,12 +79,20 @@
                 },
                 deleteRole(id) {
                     if (confirm('Are you sure you want to delete this role?')) {
+                        const csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         fetch(`/ajax/sijiden/roles/${id}`, {
                             method: 'DELETE',
+                            headers: {
+                                'X-CSRF-Token': csrf
+                            }
                         })
-                            .then(res => {
-                                if (res.ok) this.fetchRoles()
-                                else alert('Failed to delete role')
+                            .then(async res => {
+                                if (res.ok) {
+                                    this.fetchRoles()
+                                } else {
+                                    const err = await res.json()
+                                    alert(err.error || 'Failed to delete role')
+                                }
                             })
                     }
                 }

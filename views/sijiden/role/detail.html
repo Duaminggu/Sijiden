@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Role Detail - Sijiden</title>
+    <meta name="csrf-token" content="{{.csrf_token}}">
+    <meta name="role-id" content="{{.role_id}}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="/static/lib/alpine-component.js"></script>
+    <script src="/static/lib/alpine-page-active.js"></script>
+    <style>
+        [x-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div x-data x-cloak x-component.once="/sijiden/components/navbar" x-page-active="'roles'">
+    </div>
+
+    <div class="ui container" style="margin-top: 60px;">
+        <h1 class="ui header">Role Detail</h1>
+        <div x-data="roleDetail" class="ui grid">
+            <!-- Kolom Kiri: Detail Role -->
+            <div class="eight wide column">
+
+                <table class="ui definition celled table">
+                    <tbody>
+                        <tr>
+                            <td>Name</td>
+                            <td x-text="role.name"></td>
+                        </tr>
+                        <tr>
+                            <td>Description</td>
+                            <td x-text="role.description"></td>
+                        </tr>
+                        <tr>
+                            <td>Redirect URL</td>
+                            <td x-text="role.redirectUrl"></td>
+                        </tr>
+                        <tr>
+                            <td>Created At</td>
+                            <td x-text="formatDate(role.created_at)"></td>
+                        </tr>
+                        <tr>
+                            <td>Updated At</td>
+                            <td x-text="formatDate(role.updated_at)"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <a href="/sijiden/roles" class="ui button">← Back to List</a>
+            </div>
+
+            <!-- Kolom Kanan: Daftar Users -->
+            <div class="eight wide column">
+                <h3 class="ui header">Users with this Role</h3>
+                <table class="ui celled table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="user in role.users" :key="user.email">
+                            <tr>
+                                <td x-text="user.username"></td>
+                                <td x-text="user.email"></td>
+                            </tr>
+                        </template>
+                        <tr x-show="role.users.length === 0">
+                            <td colspan="2" class="center aligned">No users assigned to this role.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('roleDetail', () => ({
+                role: {
+                    name: '',
+                    description: '',
+                    redirectUrl: '',
+                    created_at: '',
+                    updated_at: '',
+                    users: []
+                },
+                init() {
+                    const id = document.querySelector('meta[name="role-id"]').getAttribute('content')
+                    fetch(`/ajax/sijiden/roles/${id}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            this.role = data
+                        })
+                },
+                formatDate(dateStr) {
+                    const d = new Date(dateStr)
+                    return d.toLocaleString()
+                }
+            }))
+        })
+    </script>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Role Form - Sijiden</title>
+    <meta name="csrf-token" content="{{.csrf_token}}">
+    <meta name="role-id" content="{{.role_id}}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="/static/lib/alpine-component.js"></script>
+    <script src="/static/lib/alpine-page-active.js"></script>
+    <style>
+        [x-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div x-data x-cloak x-component.once="/sijiden/components/navbar" x-page-active="'roles'">
+    </div>
+
+    <div class="ui container" style="margin-top: 60px;" x-data="roleForm">
+        <h1 class="ui header" x-text="roleId ? 'Update Role' : 'Create Role'"></h1>
+        <form class="ui form" @submit.prevent="submit">
+            <div class="field">
+                <label>Name</label>
+                <input type="text" x-model="form.name" placeholder="Role name" required>
+            </div>
+
+            <div class="field">
+                <label>Description</label>
+                <textarea x-model="form.description" placeholder="Role description"></textarea>
+            </div>
+
+            <div class="field">
+                <label>Redirect URL</label>
+                <input type="text" x-model="form.redirectUrl" placeholder="/dashboard/admin">
+            </div>
+
+            <button class="ui primary button" type="submit" :class="{ loading: loading }">Submit</button>
+            <a href="/sijiden/roles" class="ui button">Cancel</a>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('roleForm', () => ({
+                form: {
+                    name: '',
+                    description: '',
+                    redirectUrl: ''
+                },
+                loading: false,
+                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                roleId: document.querySelector('meta[name="role-id"]')?.getAttribute('content'),
+
+                init() {
+                    if (this.roleId) {
+                        // Mode update → ambil data dari backend
+                        fetch(`/ajax/sijiden/roles/${this.roleId}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                this.form.name = data.name
+                                this.form.description = data.description
+                                this.form.redirectUrl = data.redirectUrl
+                            })
+                    }
+                },
+
+                submit() {
+                    this.loading = true
+                    const method = this.roleId ? 'PUT' : 'POST'
+                    const url = this.roleId
+                        ? `/ajax/sijiden/roles/${this.roleId}/update`
+                        : '/ajax/sijiden/roles/create'
+
+                    fetch(url, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': this.csrf
+                        },
+                        body: JSON.stringify(this.form)
+                    })
+                        .then(res => {
+                            if (!res.ok) throw new Error('Failed to save role')
+                            return res.json()
+                        })
+                        .then(() => {
+                            window.location.href = '/sijiden/roles'
+                        })
+                        .catch(err => {
+                            alert(err.message)
+                        })
+                        .finally(() => {
+                            this.loading = false
+                        })
+                }
+            }))
+        })
+    </script>
+
+
+
+</body>
+
+</html>

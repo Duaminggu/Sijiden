@@ -22,13 +22,13 @@ func RegisterWebRoutes(e *echo.Echo, client *ent.Client, store *session.SessionS
 	sijidenUserGroup := sijidenGroup.Group("/users")
 	sijidenUserGroup.GET("", view.UserListPage(store))
 	sijidenUserGroup.GET("/create", view.UserCreatePage(store))
-	sijidenUserGroup.GET("/update", view.UserUpdatePage(store))
+	sijidenUserGroup.GET("/:id/update", view.UserUpdatePage(store))
 
 	sijidenRoleGroup := sijidenGroup.Group("/roles")
-	sijidenRoleGroup.GET("", view.RoleListPage())
-	sijidenRoleGroup.GET("/create", view.RoleListPage())
-	sijidenRoleGroup.GET("/update", view.RoleListPage())
-	sijidenRoleGroup.GET("/:id/detail", view.RoleListPage())
+	sijidenRoleGroup.GET("", view.RoleListPage(store))
+	sijidenRoleGroup.GET("/create", view.RoleCreatePage(store))
+	sijidenRoleGroup.GET("/:id/update", view.RoleUpdatePage(store))
+	sijidenRoleGroup.GET("/:id/detail", view.RoleDetailPage(store))
 
 	e.GET("/auth", view.AuthPage(store))
 

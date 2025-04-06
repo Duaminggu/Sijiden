@@ -15,7 +15,7 @@ func RequireLoginView(store *session.SessionStore) echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			cookie, err := c.Cookie("session_id")
 			if err != nil || cookie.Value == "" {
-				return c.Redirect(302, "/sijiden/auth")
+				return c.Redirect(302, "/auth")
 			}
 
 			if userID, ok := store.Get(cookie.Value); ok && userID > 0 {
@@ -23,7 +23,7 @@ func RequireLoginView(store *session.SessionStore) echo.MiddlewareFunc {
 				return next(c)
 			}
 
-			return c.Redirect(302, "/sijiden/auth")
+			return c.Redirect(302, "/auth")
 		}
 	}
 }

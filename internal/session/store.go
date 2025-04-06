@@ -53,6 +53,18 @@ func (s *SessionStore) GetCSRF(sessionID string) (string, bool) {
 	return token, ok
 }
 
+func (s *SessionStore) ValidateCSRF(sessionID, token string) bool {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	expectedToken, ok := s.csrf[sessionID]
+	if !ok || expectedToken == "" {
+		return false
+	}
+
+	return expectedToken == token
+}
+
 func (s *SessionStore) SetValue(sessionID, key, value string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
