@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create User - Sijiden</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+
+<body>
+    <div class="ui container" style="margin-top: 60px;" x-init="init()" x-data="createUserForm()">
+        <h2 class="ui header">Add New User</h2>
+
+        <form class="ui form" @submit.prevent="submitForm">
+            <div class="field">
+                <label>Username</label>
+                <input type="text" x-model="form.username" required>
+            </div>
+            <div class="field">
+                <label>Email</label>
+                <input type="email" x-model="form.email" required>
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input type="password" x-model="form.password" required>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>First Name</label>
+                    <input type="text" x-model="form.firstName">
+                </div>
+                <div class="field">
+                    <label>Last Name</label>
+                    <input type="text" x-model="form.lastName">
+                </div>
+            </div>
+            <div class="field">
+                <label>Phone Number</label>
+                <input type="text" x-model="form.phoneNumber">
+            </div>
+            <!-- Tambahkan ini di dalam <form class="ui form"> -->
+            <div class="field">
+                <label>Roles</label>
+                <div class="ui list">
+                    <template x-for="role in roles" :key="role.id">
+                        <div class="item">
+                            <div class="ui checkbox">
+                                <input type="checkbox" :value="role.id" @change="toggleRole(role.id)"
+                                    :id="'role-'+role.id">
+                                <label :for="'role-'+role.id" x-text="role.name"></label>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <div class="ui red mini message" x-show="roleError">At least one role must be selected.</div>
+            </div>
+
+
+            <div class="ui message success" x-show="success" x-text="successMessage"></div>
+            <div class="ui message error" x-show="error" x-text="errorMessage"></div>
+
+            <button type="submit" class="ui primary button" :class="{'loading': loading}">
+                Submit
+            </button>
+        </form>
+    </div>
+
+    <script>
+        function createUserForm() {
+            return {
+                form: {
+                    username: '',
+                    email: '',
+                    password: '',
+                    firstName: '',
+                    lastName: '',
+                    phoneNumber: ''
+                },
+                roles: [],
+                selectedRoles: [],
+                roleError: false,
+                success: false,
+                successMessage: '',
+                error: false,
+                errorMessage: '',
+                loading: false,
+
+                async loadRoles() {
+                    try {
+                        const res = await fetch('/sijiden/roles');
+                        const json = await res.json();
+                        this.roles = json.data || [];
+                    } catch (e) {
+                        console.error('Failed to load roles', e);
+                    }
+                },
+
+                toggleRole(id) {
+                    const idx = this.selectedRoles.indexOf(id);
+                    if (idx === -1) {
+                        this.selectedRoles.push(id);
+                    } else {
+                        this.selectedRoles.splice(idx, 1);
+                    }
+                },
+
+                async submitForm() {
+                    this.success = false;
+                    this.error = false;
+                    this.roleError = false;
+
+                    if (this.selectedRoles.length === 0) {
+                        this.roleError = true;
+                        return;
+                    }
+
+                    this.loading = true;
+
+                    try {
+                        const res = await fetch('/sijiden/users', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                ...this.form,
+                                roleIds: this.selectedRoles
+                            })
+                        });
+
+                        const data = await res.json();
+
+                        if (res.ok) {
+                            this.success = true;
+                            this.successMessage = 'User created successfully!';
+                            this.form = {
+                                username: '',
+                                email: '',
+                                password: '',
+                                firstName: '',
+                                lastName: '',
+                                phoneNumber: ''
+                            };
+                            this.selectedRoles = [];
+                        } else {
+                            this.error = true;
+                            this.errorMessage = data.error || 'Failed to create user.';
+                        }
+                    } catch (e) {
+                        this.error = true;
+                        this.errorMessage = 'Server error.';
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                init() {
+                    this.loadRoles();
+                }
+            }
+        }
+
+
+    </script>
+</body>
+
+</html>

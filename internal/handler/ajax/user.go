@@ -8,6 +8,7 @@ import (
 	"github.com/duaminggu/sijiden/ent"
 	"github.com/duaminggu/sijiden/ent/user"
 	"github.com/duaminggu/sijiden/ent/userrole"
+	"github.com/duaminggu/sijiden/internal/dto"
 	"github.com/duaminggu/sijiden/internal/session"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -25,6 +26,7 @@ type CreateUserRequest struct {
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`
 	PhoneNumber string `json:"phone_number"`
+	RoleIDs     []int  `json:"role_ids"`
 }
 
 func (h *UserHandler) CountUsers(c echo.Context) error {
@@ -41,17 +43,52 @@ func (h *UserHandler) CountUsers(c echo.Context) error {
 
 // POST /users
 func (h *UserHandler) Create(c echo.Context) error {
+	ctx := c.Request().Context()
+
 	var req CreateUserRequest
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": "Invalid input"})
 	}
 
+	// Validasi wajib
+	if req.Username == "" || req.Email == "" || req.Password == "" {
+		return c.JSON(http.StatusBadRequest, echo.Map{"error": "Username, email, and password are required"})
+	}
+	if len(req.RoleIDs) == 0 {
+		return c.JSON(http.StatusBadRequest, echo.Map{"error": "At least one role must be selected"})
+	}
+
+	// Cek duplikat username
+	exists, err := h.Client.User.
+		Query().
+		Where(user.UsernameEQ(req.Username)).
+		Exist(ctx)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to check username"})
+	}
+	if exists {
+		return c.JSON(http.StatusBadRequest, echo.Map{"error": "Username already in use"})
+	}
+
+	// Cek duplikat email
+	exists, err = h.Client.User.
+		Query().
+		Where(user.EmailEQ(req.Email)).
+		Exist(ctx)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to check email"})
+	}
+	if exists {
+		return c.JSON(http.StatusBadRequest, echo.Map{"error": "Email already in use"})
+	}
+
 	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "failed to hash password"})
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to hash password"})
 	}
 
+	// Simpan user
 	user, err := h.Client.User.
 		Create().
 		SetUsername(req.Username).
@@ -60,40 +97,83 @@ func (h *UserHandler) Create(c echo.Context) error {
 		SetFirstName(req.FirstName).
 		SetLastName(req.LastName).
 		SetPhoneNumber(req.PhoneNumber).
-		Save(context.Background())
+		Save(ctx)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to create user", "details": err.Error()})
 	}
 
-	return c.JSON(http.StatusCreated, user)
+	// Assign roles ke user
+	for _, roleID := range req.RoleIDs {
+		_, err := h.Client.UserRole.
+			Create().
+			SetUserID(user.ID).
+			SetRoleID(roleID).
+			Save(ctx)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to assign role", "details": err.Error()})
+		}
+	}
+
+	return c.JSON(http.StatusCreated, echo.Map{
+		"message": "User created successfully",
+		"user_id": user.ID,
+	})
+
 }
 
 func (h *UserHandler) List(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	// Default pagination
+	limit := 20
+	offset := 0
+
+	if l := c.QueryParam("limit"); l != "" {
+		if parsedLimit, err := strconv.Atoi(l); err == nil {
+			limit = parsedLimit
+		}
+	}
+	if o := c.QueryParam("offset"); o != "" {
+		if parsedOffset, err := strconv.Atoi(o); err == nil {
+			offset = parsedOffset
+		}
+	}
+
+	if limit <= 0 || limit > 100 {
+		limit = 20
+	}
+
+	// Hitung total user (untuk meta)
+	totalCount, err := h.Client.User.Query().Count(ctx)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "failed to count users", "details": err.Error()})
+	}
+
+	// Query dengan relasi user_roles
 	users, err := h.Client.User.
 		Query().
-		WithUserRoles(). // include relasi user_roles
-		All(context.Background())
+		WithUserRoles(func(urq *ent.UserRoleQuery) {
+			urq.WithRole()
+		}).
+		Limit(limit).
+		Offset(offset).
+		All(ctx)
+
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "failed to fetch users", "details": err.Error()})
 	}
 
-	// Siapkan hasil dengan jumlah user
-	result := make([]map[string]interface{}, 0, len(users))
-	for _, u := range users {
-		result = append(result, map[string]interface{}{
-			"id":          u.ID,
-			"username":    u.Username,
-			"firstName":   u.FirstName,
-			"lastName":    u.LastName,
-			"email":       u.Email,
-			"lastIp":      u.LastIP,
-			"loginsCount": u.LoginsCount,
-			"lastLoginAt": u.LastLoginAt,
-			"userCount":   len(u.Edges.UserRoles), // hitung jumlah user_roles
-		})
-	}
+	userResponses := dto.ToUserResponses(users, true)
 
-	return c.JSON(http.StatusOK, result)
+	// Response JSON
+	return c.JSON(http.StatusOK, echo.Map{
+		"data": userResponses,
+		"meta": echo.Map{
+			"total":  totalCount,
+			"limit":  limit,
+			"offset": offset,
+		},
+	})
 }
 
 // GET /users/:id

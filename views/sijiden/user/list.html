@@ -17,45 +17,78 @@
 </head>
 
 <body>
-    <div x-data x-cloak x-component.once="/sijiden/components/navbar" x-page-active="'users'">
-    </div>
+    <div x-data x-cloak x-component.once="/sijiden/components/navbar" x-page-active="'users'"></div>
 
-    <div class="ui container" style="margin-top: 60px;">
+    <div class="ui container" style="margin-top: 60px;" x-data="userList()" x-init="loadUsers()">
         <h1 class="ui header">
             Users
         </h1>
-        <a href="#" class="ui button primary mini"><i class="plus icon"></i> Add New User</a>
-        <table class="ui celled table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Roles</th>
-                    <th>#</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td data-label="Name">James</td>
-                    <td data-label="Age">24</td>
-                    <td data-label="Job">Engineer</td>
-                    <td data-label="action"></td>
-                </tr>
-                <tr>
-                    <td data-label="Name">Jill</td>
-                    <td data-label="Age">26</td>
-                    <td data-label="Job"></td>
-                    <td data-label="Action"></td>
-                </tr>
-                <tr>
-                    <td data-label="Name">Elyse</td>
-                    <td data-label="Age">24</td>
-                    <td data-label="Job"></td>
-                    <td data-label="Action"></td>
-                </tr>
-            </tbody>
-        </table>
+        <a href="/sijiden/users/create" class="ui button primary mini"><i class="plus icon"></i> Add New User</a>
+
+        <div class="ui active inline loader" x-show="loading"></div>
+
+        <template x-if="!loading">
+            <table class="ui celled table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Roles</th>
+                        <th>Last Login</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="user in users" :key="user.id">
+                        <tr>
+                            <td x-text="user.username"></td>
+                            <td x-text="user.first_name + ' ' + user.last_name"></td>
+                            <td x-text="user.email"></td>
+                            <td>
+                                <template x-if="user.roles.length > 0">
+                                    <div class="ui labels">
+                                        <template x-for="role in user.roles" :key="role">
+                                            <span class="ui label" x-text="role"></span>
+                                        </template>
+                                    </div>
+                                </template>
+                            </td>
+                            <td x-text="new Date(user.last_login_at).toLocaleString()"></td>
+                            <td>
+                                <a :href="`/sijiden/users/${user.id}/detail`" class="ui icon button mini">
+                                    <i class="eye icon"></i>
+                                </a>
+                                <a :href="`/sijiden/users/${user.id}/update`" class="ui icon button mini">
+                                    <i class="edit icon"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </template>
     </div>
+
+    <script>
+        function userList() {
+            return {
+                users: [],
+                loading: true,
+                async loadUsers() {
+                    try {
+                        const res = await fetch('/ajax/sijiden/users');
+                        const json = await res.json();
+                        this.users = json.data;
+                    } catch (e) {
+                        console.error('Failed to load users', e);
+                    } finally {
+                        this.loading = false;
+                    }
+                }
+            }
+        }
+    </script>
 
 </body>
 
