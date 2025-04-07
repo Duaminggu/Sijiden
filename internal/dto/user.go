@@ -6,16 +6,21 @@ import (
 	"github.com/duaminggu/sijiden/ent"
 )
 
+type UserRoleInfo struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 type UserResponse struct {
-	ID          int       `json:"id"`
-	Username    string    `json:"username"`
-	Email       string    `json:"email"`
-	FirstName   string    `json:"first_name"`
-	LastName    string    `json:"last_name"`
-	PhoneNumber string    `json:"phone_number"`
-	LastLoginAt time.Time `json:"last_login_at"`
-	LoginsCount int       `json:"logins_count"`
-	Roles       []string  `json:"roles,omitempty"`
+	ID          int            `json:"id"`
+	Username    string         `json:"username"`
+	Email       string         `json:"email"`
+	FirstName   string         `json:"first_name"`
+	LastName    string         `json:"last_name"`
+	PhoneNumber string         `json:"phone_number"`
+	LastLoginAt time.Time      `json:"last_login_at"`
+	LoginsCount int            `json:"logins_count"`
+	Roles       []UserRoleInfo `json:"roles,omitempty"` // ID + Name
 }
 
 func ToUserResponse(u *ent.User, includeRoles bool) UserResponse {
@@ -33,7 +38,10 @@ func ToUserResponse(u *ent.User, includeRoles bool) UserResponse {
 	if includeRoles && u.Edges.UserRoles != nil {
 		for _, ur := range u.Edges.UserRoles {
 			if ur.Edges.Role != nil {
-				res.Roles = append(res.Roles, ur.Edges.Role.Name)
+				res.Roles = append(res.Roles, UserRoleInfo{
+					ID:   ur.Edges.Role.ID,
+					Name: ur.Edges.Role.Name,
+				})
 			}
 		}
 	}

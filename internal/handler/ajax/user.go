@@ -2,6 +2,7 @@ package ajax
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -20,13 +21,18 @@ type UserHandler struct {
 }
 
 type CreateUserRequest struct {
-	Username    string `json:"username"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	FirstName   string `json:"first_name"`
-	LastName    string `json:"last_name"`
-	PhoneNumber string `json:"phone_number"`
-	RoleIDs     []int  `json:"role_ids"`
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	RoleIDs   []int  `json:"role_ids"`
+}
+
+type UpdateUserRequest struct {
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	RoleIDs   []int  `json:"role_ids"`
 }
 
 func (h *UserHandler) CountUsers(c echo.Context) error {
@@ -96,7 +102,6 @@ func (h *UserHandler) Create(c echo.Context) error {
 		SetPassword(string(hashedPassword)).
 		SetFirstName(req.FirstName).
 		SetLastName(req.LastName).
-		SetPhoneNumber(req.PhoneNumber).
 		Save(ctx)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to create user", "details": err.Error()})
@@ -178,12 +183,23 @@ func (h *UserHandler) List(c echo.Context) error {
 
 // GET /users/:id
 func (h *UserHandler) Detail(c echo.Context) error {
+	ctx := c.Request().Context()
 	id, _ := strconv.Atoi(c.Param("id"))
-	u, err := h.Client.User.Get(context.Background(), id)
+
+	user, err := h.Client.User.
+		Query().
+		Where(user.IDEQ(id)).
+		WithUserRoles(func(q *ent.UserRoleQuery) {
+			q.WithRole()
+		}).
+		Only(ctx)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"error": "User not found"})
 	}
-	return c.JSON(http.StatusOK, u)
+
+	userResponse := dto.ToUserResponse(user, true)
+
+	return c.JSON(http.StatusOK, userResponse)
 }
 
 // GET /users
@@ -209,41 +225,84 @@ func (h *UserHandler) Get(c echo.Context) error {
 
 // PUT /users/:id
 func (h *UserHandler) Update(c echo.Context) error {
+	ctx := c.Request().Context()
 	id, _ := strconv.Atoi(c.Param("id"))
-	var req CreateUserRequest
+
+	var req UpdateUserRequest
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": "Invalid input"})
 	}
 
-	// Hash password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "failed to hash password"})
+	if len(req.RoleIDs) == 0 {
+		return c.JSON(http.StatusBadRequest, echo.Map{"error": "At least one role must be selected"})
 	}
 
-	u, err := h.Client.User.UpdateOneID(id).
-		SetUsername(req.Username).
-		SetEmail(req.Email).
-		SetPassword(string(hashedPassword)).
+	// Update hanya first_name dan last_name
+	user, err := h.Client.User.
+		UpdateOneID(id).
 		SetFirstName(req.FirstName).
 		SetLastName(req.LastName).
-		SetPhoneNumber(req.PhoneNumber).
-		Save(context.Background())
+		Save(ctx)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to update user", "details": err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, u)
+	// Hapus semua role sebelumnya
+	deletedCount, err := h.Client.UserRole.
+		Delete().
+		Where(userrole.UserID(id)).
+		Exec(ctx)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to clear user roles", "details": err.Error()})
+	}
+	// Bisa log jika mau:
+	log.Printf("Deleted %d user roles", deletedCount)
+
+	// Tambahkan role baru
+	for _, roleID := range req.RoleIDs {
+		_, err := h.Client.UserRole.
+			Create().
+			SetUserID(user.ID).
+			SetRoleID(roleID).
+			Save(ctx)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to assign role", "details": err.Error()})
+		}
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "User updated successfully",
+		"data":    id,
+	})
 }
 
 // DELETE /users/:id
 func (h *UserHandler) Delete(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
-	err := h.Client.User.DeleteOneID(id).Exec(context.Background())
+	ctx := c.Request().Context()
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+		return c.JSON(http.StatusBadRequest, echo.Map{"error": "Invalid user ID"})
 	}
+
+	// Hapus relasi user_roles dulu
+	_, err = h.Client.UserRole.
+		Delete().
+		Where(userrole.UserID(id)).
+		Exec(ctx)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to delete user roles", "details": err.Error()})
+	}
+
+	// Hapus user
+	err = h.Client.User.
+		DeleteOneID(id).
+		Exec(ctx)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": "Failed to delete user", "details": err.Error()})
+	}
+
 	return c.NoContent(http.StatusNoContent)
+
 }
 
 // GET /users/:id/roles

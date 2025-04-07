@@ -5,40 +5,46 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create User - Sijiden</title>
+    <meta name="csrf-token" content="{{.csrf_token}}">
+    <meta name="user-id" content="{{.user_id}}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="/static/lib/alpine-component.js"></script>
+    <script src="/static/lib/alpine-page-active.js"></script>
+    <style>
+        [x-cloak] {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="ui container" style="margin-top: 60px;" x-init="init()" x-data="createUserForm()">
-        <h2 class="ui header">Add New User</h2>
+    <div x-data x-cloak x-component.once="/sijiden/components/navbar" x-page-active="'users'"></div>
+    <div class="ui container" style="margin-top: 60px;" x-data="userForm" x-init="init()">
+        <h2 class="ui header" x-text="userId ? 'Update User' : 'Add New User'"></h2>
 
         <form class="ui form" @submit.prevent="submitForm">
-            <div class="field">
+            <div class="field" x-show="!userId">
                 <label>Username</label>
-                <input type="text" x-model="form.username" required>
+                <input type="text" x-model="form.username" :required="!userId">
             </div>
-            <div class="field">
+            <div class="field" x-show="!userId">
                 <label>Email</label>
-                <input type="email" x-model="form.email" required>
+                <input type="email" x-model="form.email" :required="!userId">
             </div>
-            <div class="field">
+            <div class="field" x-show="!userId">
                 <label>Password</label>
-                <input type="password" x-model="form.password" required>
+                <input type="password" x-model="form.password" :required="!userId">
             </div>
             <div class="two fields">
                 <div class="field">
                     <label>First Name</label>
-                    <input type="text" x-model="form.firstName">
+                    <input type="text" x-model="form.first_name">
                 </div>
                 <div class="field">
                     <label>Last Name</label>
-                    <input type="text" x-model="form.lastName">
+                    <input type="text" x-model="form.last_name">
                 </div>
-            </div>
-            <div class="field">
-                <label>Phone Number</label>
-                <input type="text" x-model="form.phoneNumber">
             </div>
             <!-- Tambahkan ini di dalam <form class="ui form"> -->
             <div class="field">
@@ -47,8 +53,8 @@
                     <template x-for="role in roles" :key="role.id">
                         <div class="item">
                             <div class="ui checkbox">
-                                <input type="checkbox" :value="role.id" @change="toggleRole(role.id)"
-                                    :id="'role-'+role.id">
+                                <input type="checkbox" :value="role.id" :checked="selectedRoles.includes(role.id)"
+                                    @change="toggleRole(role.id)" :id="'role-' + role.id">
                                 <label :for="'role-'+role.id" x-text="role.name"></label>
                             </div>
                         </div>
@@ -61,25 +67,26 @@
             <div class="ui message success" x-show="success" x-text="successMessage"></div>
             <div class="ui message error" x-show="error" x-text="errorMessage"></div>
 
-            <button type="submit" class="ui primary button" :class="{'loading': loading}">
-                Submit
-            </button>
+            <button class="ui primary button" type="submit" :class="{ loading: loading }">Submit</button>
+            <a href="/sijiden/users" class="ui button">Cancel</a>
         </form>
     </div>
 
     <script>
-        function createUserForm() {
-            return {
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('userForm', () => ({
                 form: {
                     username: '',
                     email: '',
                     password: '',
-                    firstName: '',
-                    lastName: '',
-                    phoneNumber: ''
+                    first_name: '',
+                    last_name: '',
+                    phone_number: ''
                 },
                 roles: [],
                 selectedRoles: [],
+                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                userId: document.querySelector('meta[name="user-id"]')?.getAttribute('content'),
                 roleError: false,
                 success: false,
                 successMessage: '',
@@ -87,80 +94,90 @@
                 errorMessage: '',
                 loading: false,
 
-                async loadRoles() {
-                    try {
-                        const res = await fetch('/sijiden/roles');
-                        const json = await res.json();
-                        this.roles = json.data || [];
-                    } catch (e) {
-                        console.error('Failed to load roles', e);
+                async init() {
+                    await this.loadRoles()
+
+                    if (this.userId) {
+                        const res = await fetch(`/ajax/sijiden/users/${this.userId}`)
+                        const user = await res.json()
+                        console.log(user)
+                        this.form = {
+                            username: user.username,
+                            email: user.email,
+                            password: '', // Kosongkan, hanya diisi jika ingin ganti
+                            first_name: user.first_name,
+                            last_name: user.last_name,
+                            phone_number: user.phone_number
+                        }
+                        this.selectedRoles = user.roles?.map(r => r.id) || []
                     }
                 },
 
+                async loadRoles() {
+                    const res = await fetch('/ajax/sijiden/roles')
+                    const json = await res.json()
+                    this.roles = json
+                },
+
                 toggleRole(id) {
-                    const idx = this.selectedRoles.indexOf(id);
+                    const idx = this.selectedRoles.indexOf(id)
                     if (idx === -1) {
-                        this.selectedRoles.push(id);
+                        this.selectedRoles.push(id)
                     } else {
-                        this.selectedRoles.splice(idx, 1);
+                        this.selectedRoles.splice(idx, 1)
                     }
                 },
 
                 async submitForm() {
-                    this.success = false;
-                    this.error = false;
-                    this.roleError = false;
+                    this.success = false
+                    this.error = false
+                    this.roleError = false
 
                     if (this.selectedRoles.length === 0) {
-                        this.roleError = true;
-                        return;
+                        this.roleError = true
+                        return
                     }
 
-                    this.loading = true;
+                    this.loading = true
+                    const url = this.userId
+                        ? `/ajax/sijiden/users/${this.userId}`
+                        : `/ajax/sijiden/users`
+                    const method = this.userId ? 'PUT' : 'POST'
 
                     try {
-                        const res = await fetch('/sijiden/users', {
-                            method: 'POST',
+                        const res = await fetch(url, {
+                            method: method,
                             headers: {
-                                'Content-Type': 'application/json'
+                                'Content-Type': 'application/json',
+                                'X-CSRF-Token': this.csrf
                             },
                             body: JSON.stringify({
                                 ...this.form,
-                                roleIds: this.selectedRoles
+                                role_ids: Array.from(this.selectedRoles)
                             })
-                        });
+                        })
 
-                        const data = await res.json();
-
+                        const data = await res.json()
                         if (res.ok) {
-                            this.success = true;
-                            this.successMessage = 'User created successfully!';
-                            this.form = {
-                                username: '',
-                                email: '',
-                                password: '',
-                                firstName: '',
-                                lastName: '',
-                                phoneNumber: ''
-                            };
-                            this.selectedRoles = [];
+                            this.success = true
+                            this.successMessage = this.userId
+                                ? 'User updated successfully!'
+                                : 'User created successfully!'
+                            setTimeout(() => window.location.href = '/sijiden/users', 800)
                         } else {
-                            this.error = true;
-                            this.errorMessage = data.error || 'Failed to create user.';
+                            this.error = true
+                            this.errorMessage = data.error || 'Failed to save user.'
                         }
                     } catch (e) {
-                        this.error = true;
-                        this.errorMessage = 'Server error.';
+                        this.error = true
+                        this.errorMessage = 'Server error.'
                     } finally {
-                        this.loading = false;
+                        this.loading = false
                     }
-                },
-
-                init() {
-                    this.loadRoles();
                 }
-            }
-        }
+            }))
+        })
+
 
 
     </script>

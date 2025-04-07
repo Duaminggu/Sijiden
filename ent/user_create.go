@@ -57,9 +57,25 @@ func (uc *UserCreate) SetPhoneNumber(s string) *UserCreate {
 	return uc
 }
 
+// SetNillablePhoneNumber sets the "phone_number" field if the given value is not nil.
+func (uc *UserCreate) SetNillablePhoneNumber(s *string) *UserCreate {
+	if s != nil {
+		uc.SetPhoneNumber(*s)
+	}
+	return uc
+}
+
 // SetPictureURL sets the "picture_url" field.
 func (uc *UserCreate) SetPictureURL(s string) *UserCreate {
 	uc.mutation.SetPictureURL(s)
+	return uc
+}
+
+// SetNillablePictureURL sets the "picture_url" field if the given value is not nil.
+func (uc *UserCreate) SetNillablePictureURL(s *string) *UserCreate {
+	if s != nil {
+		uc.SetPictureURL(*s)
+	}
 	return uc
 }
 
@@ -69,9 +85,25 @@ func (uc *UserCreate) SetLastIP(s string) *UserCreate {
 	return uc
 }
 
+// SetNillableLastIP sets the "last_ip" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLastIP(s *string) *UserCreate {
+	if s != nil {
+		uc.SetLastIP(*s)
+	}
+	return uc
+}
+
 // SetLastLoginAt sets the "last_login_at" field.
 func (uc *UserCreate) SetLastLoginAt(t time.Time) *UserCreate {
 	uc.mutation.SetLastLoginAt(t)
+	return uc
+}
+
+// SetNillableLastLoginAt sets the "last_login_at" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLastLoginAt(t *time.Time) *UserCreate {
+	if t != nil {
+		uc.SetLastLoginAt(*t)
+	}
 	return uc
 }
 
@@ -248,18 +280,6 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.LastName(); !ok {
 		return &ValidationError{Name: "last_name", err: errors.New(`ent: missing required field "User.last_name"`)}
-	}
-	if _, ok := uc.mutation.PhoneNumber(); !ok {
-		return &ValidationError{Name: "phone_number", err: errors.New(`ent: missing required field "User.phone_number"`)}
-	}
-	if _, ok := uc.mutation.PictureURL(); !ok {
-		return &ValidationError{Name: "picture_url", err: errors.New(`ent: missing required field "User.picture_url"`)}
-	}
-	if _, ok := uc.mutation.LastIP(); !ok {
-		return &ValidationError{Name: "last_ip", err: errors.New(`ent: missing required field "User.last_ip"`)}
-	}
-	if _, ok := uc.mutation.LastLoginAt(); !ok {
-		return &ValidationError{Name: "last_login_at", err: errors.New(`ent: missing required field "User.last_login_at"`)}
 	}
 	if _, ok := uc.mutation.LoginsCount(); !ok {
 		return &ValidationError{Name: "logins_count", err: errors.New(`ent: missing required field "User.logins_count"`)}

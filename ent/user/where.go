@@ -505,6 +505,16 @@ func PhoneNumberHasSuffix(v string) predicate.User {
 	return predicate.User(sql.FieldHasSuffix(FieldPhoneNumber, v))
 }
 
+// PhoneNumberIsNil applies the IsNil predicate on the "phone_number" field.
+func PhoneNumberIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldPhoneNumber))
+}
+
+// PhoneNumberNotNil applies the NotNil predicate on the "phone_number" field.
+func PhoneNumberNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldPhoneNumber))
+}
+
 // PhoneNumberEqualFold applies the EqualFold predicate on the "phone_number" field.
 func PhoneNumberEqualFold(v string) predicate.User {
 	return predicate.User(sql.FieldEqualFold(FieldPhoneNumber, v))
@@ -568,6 +578,16 @@ func PictureURLHasPrefix(v string) predicate.User {
 // PictureURLHasSuffix applies the HasSuffix predicate on the "picture_url" field.
 func PictureURLHasSuffix(v string) predicate.User {
 	return predicate.User(sql.FieldHasSuffix(FieldPictureURL, v))
+}
+
+// PictureURLIsNil applies the IsNil predicate on the "picture_url" field.
+func PictureURLIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldPictureURL))
+}
+
+// PictureURLNotNil applies the NotNil predicate on the "picture_url" field.
+func PictureURLNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldPictureURL))
 }
 
 // PictureURLEqualFold applies the EqualFold predicate on the "picture_url" field.
@@ -635,6 +655,16 @@ func LastIPHasSuffix(v string) predicate.User {
 	return predicate.User(sql.FieldHasSuffix(FieldLastIP, v))
 }
 
+// LastIPIsNil applies the IsNil predicate on the "last_ip" field.
+func LastIPIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldLastIP))
+}
+
+// LastIPNotNil applies the NotNil predicate on the "last_ip" field.
+func LastIPNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldLastIP))
+}
+
 // LastIPEqualFold applies the EqualFold predicate on the "last_ip" field.
 func LastIPEqualFold(v string) predicate.User {
 	return predicate.User(sql.FieldEqualFold(FieldLastIP, v))
@@ -683,6 +713,16 @@ func LastLoginAtLT(v time.Time) predicate.User {
 // LastLoginAtLTE applies the LTE predicate on the "last_login_at" field.
 func LastLoginAtLTE(v time.Time) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldLastLoginAt, v))
+}
+
+// LastLoginAtIsNil applies the IsNil predicate on the "last_login_at" field.
+func LastLoginAtIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldLastLoginAt))
+}
+
+// LastLoginAtNotNil applies the NotNil predicate on the "last_login_at" field.
+func LastLoginAtNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldLastLoginAt))
 }
 
 // LoginsCountEQ applies the EQ predicate on the "logins_count" field.

@@ -113,6 +113,12 @@ func (uu *UserUpdate) SetNillablePhoneNumber(s *string) *UserUpdate {
 	return uu
 }
 
+// ClearPhoneNumber clears the value of the "phone_number" field.
+func (uu *UserUpdate) ClearPhoneNumber() *UserUpdate {
+	uu.mutation.ClearPhoneNumber()
+	return uu
+}
+
 // SetPictureURL sets the "picture_url" field.
 func (uu *UserUpdate) SetPictureURL(s string) *UserUpdate {
 	uu.mutation.SetPictureURL(s)
@@ -124,6 +130,12 @@ func (uu *UserUpdate) SetNillablePictureURL(s *string) *UserUpdate {
 	if s != nil {
 		uu.SetPictureURL(*s)
 	}
+	return uu
+}
+
+// ClearPictureURL clears the value of the "picture_url" field.
+func (uu *UserUpdate) ClearPictureURL() *UserUpdate {
+	uu.mutation.ClearPictureURL()
 	return uu
 }
 
@@ -141,6 +153,12 @@ func (uu *UserUpdate) SetNillableLastIP(s *string) *UserUpdate {
 	return uu
 }
 
+// ClearLastIP clears the value of the "last_ip" field.
+func (uu *UserUpdate) ClearLastIP() *UserUpdate {
+	uu.mutation.ClearLastIP()
+	return uu
+}
+
 // SetLastLoginAt sets the "last_login_at" field.
 func (uu *UserUpdate) SetLastLoginAt(t time.Time) *UserUpdate {
 	uu.mutation.SetLastLoginAt(t)
@@ -152,6 +170,12 @@ func (uu *UserUpdate) SetNillableLastLoginAt(t *time.Time) *UserUpdate {
 	if t != nil {
 		uu.SetLastLoginAt(*t)
 	}
+	return uu
+}
+
+// ClearLastLoginAt clears the value of the "last_login_at" field.
+func (uu *UserUpdate) ClearLastLoginAt() *UserUpdate {
+	uu.mutation.ClearLastLoginAt()
 	return uu
 }
 
@@ -351,14 +375,26 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.PhoneNumber(); ok {
 		_spec.SetField(user.FieldPhoneNumber, field.TypeString, value)
 	}
+	if uu.mutation.PhoneNumberCleared() {
+		_spec.ClearField(user.FieldPhoneNumber, field.TypeString)
+	}
 	if value, ok := uu.mutation.PictureURL(); ok {
 		_spec.SetField(user.FieldPictureURL, field.TypeString, value)
+	}
+	if uu.mutation.PictureURLCleared() {
+		_spec.ClearField(user.FieldPictureURL, field.TypeString)
 	}
 	if value, ok := uu.mutation.LastIP(); ok {
 		_spec.SetField(user.FieldLastIP, field.TypeString, value)
 	}
+	if uu.mutation.LastIPCleared() {
+		_spec.ClearField(user.FieldLastIP, field.TypeString)
+	}
 	if value, ok := uu.mutation.LastLoginAt(); ok {
 		_spec.SetField(user.FieldLastLoginAt, field.TypeTime, value)
+	}
+	if uu.mutation.LastLoginAtCleared() {
+		_spec.ClearField(user.FieldLastLoginAt, field.TypeTime)
 	}
 	if value, ok := uu.mutation.LoginsCount(); ok {
 		_spec.SetField(user.FieldLoginsCount, field.TypeInt, value)
@@ -527,6 +563,12 @@ func (uuo *UserUpdateOne) SetNillablePhoneNumber(s *string) *UserUpdateOne {
 	return uuo
 }
 
+// ClearPhoneNumber clears the value of the "phone_number" field.
+func (uuo *UserUpdateOne) ClearPhoneNumber() *UserUpdateOne {
+	uuo.mutation.ClearPhoneNumber()
+	return uuo
+}
+
 // SetPictureURL sets the "picture_url" field.
 func (uuo *UserUpdateOne) SetPictureURL(s string) *UserUpdateOne {
 	uuo.mutation.SetPictureURL(s)
@@ -538,6 +580,12 @@ func (uuo *UserUpdateOne) SetNillablePictureURL(s *string) *UserUpdateOne {
 	if s != nil {
 		uuo.SetPictureURL(*s)
 	}
+	return uuo
+}
+
+// ClearPictureURL clears the value of the "picture_url" field.
+func (uuo *UserUpdateOne) ClearPictureURL() *UserUpdateOne {
+	uuo.mutation.ClearPictureURL()
 	return uuo
 }
 
@@ -555,6 +603,12 @@ func (uuo *UserUpdateOne) SetNillableLastIP(s *string) *UserUpdateOne {
 	return uuo
 }
 
+// ClearLastIP clears the value of the "last_ip" field.
+func (uuo *UserUpdateOne) ClearLastIP() *UserUpdateOne {
+	uuo.mutation.ClearLastIP()
+	return uuo
+}
+
 // SetLastLoginAt sets the "last_login_at" field.
 func (uuo *UserUpdateOne) SetLastLoginAt(t time.Time) *UserUpdateOne {
 	uuo.mutation.SetLastLoginAt(t)
@@ -566,6 +620,12 @@ func (uuo *UserUpdateOne) SetNillableLastLoginAt(t *time.Time) *UserUpdateOne {
 	if t != nil {
 		uuo.SetLastLoginAt(*t)
 	}
+	return uuo
+}
+
+// ClearLastLoginAt clears the value of the "last_login_at" field.
+func (uuo *UserUpdateOne) ClearLastLoginAt() *UserUpdateOne {
+	uuo.mutation.ClearLastLoginAt()
 	return uuo
 }
 
@@ -795,14 +855,26 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.PhoneNumber(); ok {
 		_spec.SetField(user.FieldPhoneNumber, field.TypeString, value)
 	}
+	if uuo.mutation.PhoneNumberCleared() {
+		_spec.ClearField(user.FieldPhoneNumber, field.TypeString)
+	}
 	if value, ok := uuo.mutation.PictureURL(); ok {
 		_spec.SetField(user.FieldPictureURL, field.TypeString, value)
+	}
+	if uuo.mutation.PictureURLCleared() {
+		_spec.ClearField(user.FieldPictureURL, field.TypeString)
 	}
 	if value, ok := uuo.mutation.LastIP(); ok {
 		_spec.SetField(user.FieldLastIP, field.TypeString, value)
 	}
+	if uuo.mutation.LastIPCleared() {
+		_spec.ClearField(user.FieldLastIP, field.TypeString)
+	}
 	if value, ok := uuo.mutation.LastLoginAt(); ok {
 		_spec.SetField(user.FieldLastLoginAt, field.TypeTime, value)
+	}
+	if uuo.mutation.LastLoginAtCleared() {
+		_spec.ClearField(user.FieldLastLoginAt, field.TypeTime)
 	}
 	if value, ok := uuo.mutation.LoginsCount(); ok {
 		_spec.SetField(user.FieldLoginsCount, field.TypeInt, value)

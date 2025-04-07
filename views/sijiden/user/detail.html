@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detail User - Sijiden</title>
+    <meta name="user-id" content="{{.user_id}}">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="/static/lib/alpine-component.js"></script>
+    <script src="/static/lib/alpine-page-active.js"></script>
+    <style>
+        [x-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div x-data x-cloak x-component.once="/sijiden/components/navbar" x-page-active="'users'"></div>
+
+    <div class="ui container" style="margin-top: 60px;" x-data="userDetail" x-init="init()">
+        <h2 class="ui header">User Detail</h2>
+
+        <div class="ui segment">
+            <p><strong>Username:</strong> <span x-text="user.username"></span></p>
+            <p><strong>Email:</strong> <span x-text="user.email"></span></p>
+            <p><strong>Name:</strong> <span x-text="user.first_name + ' ' + user.last_name"></span></p>
+            <p><strong>Phone:</strong> <span x-text="user.phone_number"></span></p>
+            <p><strong>Last Login:</strong> <span x-text="user.last_login_at"></span></p>
+            <p><strong>Last IP:</strong> <span x-text="user.last_ip"></span></p>
+            <p><strong>Logins Count:</strong> <span x-text="user.logins_count"></span></p>
+            <p><strong>Email Verified:</strong> <span x-text="user.email_verified ? 'Yes' : 'No'"></span></p>
+            <p><strong>Phone Verified:</strong> <span x-text="user.phone_verified ? 'Yes' : 'No'"></span></p>
+
+            <div class="ui divider"></div>
+            <h4 class="ui header">Roles</h4>
+            <div class="ui labels">
+                <template x-for="role in user.roles" :key="role.id">
+                    <div class="ui label" x-text="role.name"></div>
+                </template>
+            </div>
+        </div>
+
+        <a href="/sijiden/users" class="ui button">Back to List</a>
+    </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('userDetail', () => ({
+                userId: document.querySelector('meta[name="user-id"]')?.getAttribute('content'),
+                user: {},
+
+                async init() {
+                    const res = await fetch(`/ajax/sijiden/users/${this.userId}`);
+                    const data = await res.json();
+                    console.log(data)
+                    this.user = data;
+                }
+            }))
+        })
+
+    </script>
+
+</body>
+
+</html>

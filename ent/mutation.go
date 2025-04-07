@@ -1005,9 +1005,22 @@ func (m *UserMutation) OldPhoneNumber(ctx context.Context) (v string, err error)
 	return oldValue.PhoneNumber, nil
 }
 
+// ClearPhoneNumber clears the value of the "phone_number" field.
+func (m *UserMutation) ClearPhoneNumber() {
+	m.phone_number = nil
+	m.clearedFields[user.FieldPhoneNumber] = struct{}{}
+}
+
+// PhoneNumberCleared returns if the "phone_number" field was cleared in this mutation.
+func (m *UserMutation) PhoneNumberCleared() bool {
+	_, ok := m.clearedFields[user.FieldPhoneNumber]
+	return ok
+}
+
 // ResetPhoneNumber resets all changes to the "phone_number" field.
 func (m *UserMutation) ResetPhoneNumber() {
 	m.phone_number = nil
+	delete(m.clearedFields, user.FieldPhoneNumber)
 }
 
 // SetPictureURL sets the "picture_url" field.
@@ -1041,9 +1054,22 @@ func (m *UserMutation) OldPictureURL(ctx context.Context) (v string, err error) 
 	return oldValue.PictureURL, nil
 }
 
+// ClearPictureURL clears the value of the "picture_url" field.
+func (m *UserMutation) ClearPictureURL() {
+	m.picture_url = nil
+	m.clearedFields[user.FieldPictureURL] = struct{}{}
+}
+
+// PictureURLCleared returns if the "picture_url" field was cleared in this mutation.
+func (m *UserMutation) PictureURLCleared() bool {
+	_, ok := m.clearedFields[user.FieldPictureURL]
+	return ok
+}
+
 // ResetPictureURL resets all changes to the "picture_url" field.
 func (m *UserMutation) ResetPictureURL() {
 	m.picture_url = nil
+	delete(m.clearedFields, user.FieldPictureURL)
 }
 
 // SetLastIP sets the "last_ip" field.
@@ -1077,9 +1103,22 @@ func (m *UserMutation) OldLastIP(ctx context.Context) (v string, err error) {
 	return oldValue.LastIP, nil
 }
 
+// ClearLastIP clears the value of the "last_ip" field.
+func (m *UserMutation) ClearLastIP() {
+	m.last_ip = nil
+	m.clearedFields[user.FieldLastIP] = struct{}{}
+}
+
+// LastIPCleared returns if the "last_ip" field was cleared in this mutation.
+func (m *UserMutation) LastIPCleared() bool {
+	_, ok := m.clearedFields[user.FieldLastIP]
+	return ok
+}
+
 // ResetLastIP resets all changes to the "last_ip" field.
 func (m *UserMutation) ResetLastIP() {
 	m.last_ip = nil
+	delete(m.clearedFields, user.FieldLastIP)
 }
 
 // SetLastLoginAt sets the "last_login_at" field.
@@ -1113,9 +1152,22 @@ func (m *UserMutation) OldLastLoginAt(ctx context.Context) (v time.Time, err err
 	return oldValue.LastLoginAt, nil
 }
 
+// ClearLastLoginAt clears the value of the "last_login_at" field.
+func (m *UserMutation) ClearLastLoginAt() {
+	m.last_login_at = nil
+	m.clearedFields[user.FieldLastLoginAt] = struct{}{}
+}
+
+// LastLoginAtCleared returns if the "last_login_at" field was cleared in this mutation.
+func (m *UserMutation) LastLoginAtCleared() bool {
+	_, ok := m.clearedFields[user.FieldLastLoginAt]
+	return ok
+}
+
 // ResetLastLoginAt resets all changes to the "last_login_at" field.
 func (m *UserMutation) ResetLastLoginAt() {
 	m.last_login_at = nil
+	delete(m.clearedFields, user.FieldLastLoginAt)
 }
 
 // SetLoginsCount sets the "logins_count" field.
@@ -1673,7 +1725,20 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(user.FieldPhoneNumber) {
+		fields = append(fields, user.FieldPhoneNumber)
+	}
+	if m.FieldCleared(user.FieldPictureURL) {
+		fields = append(fields, user.FieldPictureURL)
+	}
+	if m.FieldCleared(user.FieldLastIP) {
+		fields = append(fields, user.FieldLastIP)
+	}
+	if m.FieldCleared(user.FieldLastLoginAt) {
+		fields = append(fields, user.FieldLastLoginAt)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1686,6 +1751,20 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
+	switch name {
+	case user.FieldPhoneNumber:
+		m.ClearPhoneNumber()
+		return nil
+	case user.FieldPictureURL:
+		m.ClearPictureURL()
+		return nil
+	case user.FieldLastIP:
+		m.ClearLastIP()
+		return nil
+	case user.FieldLastLoginAt:
+		m.ClearLastLoginAt()
+		return nil
+	}
 	return fmt.Errorf("unknown User nullable field %s", name)
 }
 
