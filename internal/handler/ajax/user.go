@@ -8,12 +8,14 @@ import (
 	"github.com/duaminggu/sijiden/ent"
 	"github.com/duaminggu/sijiden/ent/user"
 	"github.com/duaminggu/sijiden/ent/userrole"
+	"github.com/duaminggu/sijiden/internal/session"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserHandler struct {
 	Client *ent.Client
+	Store  *session.SessionStore
 }
 
 type CreateUserRequest struct {
@@ -64,6 +66,44 @@ func (h *UserHandler) Create(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, user)
+}
+
+func (h *UserHandler) List(c echo.Context) error {
+	users, err := h.Client.User.
+		Query().
+		WithUserRoles(). // include relasi user_roles
+		All(context.Background())
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"error": err.Error()})
+	}
+
+	// Siapkan hasil dengan jumlah user
+	result := make([]map[string]interface{}, 0, len(users))
+	for _, u := range users {
+		result = append(result, map[string]interface{}{
+			"id":          u.ID,
+			"username":    u.Username,
+			"firstName":   u.FirstName,
+			"lastName":    u.LastName,
+			"email":       u.Email,
+			"lastIp":      u.LastIP,
+			"loginsCount": u.LoginsCount,
+			"lastLoginAt": u.LastLoginAt,
+			"userCount":   len(u.Edges.UserRoles), // hitung jumlah user_roles
+		})
+	}
+
+	return c.JSON(http.StatusOK, result)
+}
+
+// GET /users/:id
+func (h *UserHandler) Detail(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+	u, err := h.Client.User.Get(context.Background(), id)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, echo.Map{"error": "User not found"})
+	}
+	return c.JSON(http.StatusOK, u)
 }
 
 // GET /users

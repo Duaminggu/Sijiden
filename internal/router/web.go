@@ -23,6 +23,7 @@ func RegisterWebRoutes(e *echo.Echo, client *ent.Client, store *session.SessionS
 	sijidenUserGroup.GET("", view.UserListPage(store))
 	sijidenUserGroup.GET("/create", view.UserCreatePage(store))
 	sijidenUserGroup.GET("/:id/update", view.UserUpdatePage(store))
+	sijidenUserGroup.GET("/:id/detail", view.UserDetailPage(store))
 
 	sijidenRoleGroup := sijidenGroup.Group("/roles")
 	sijidenRoleGroup.GET("", view.RoleListPage(store))

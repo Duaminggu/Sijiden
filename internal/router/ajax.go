@@ -9,7 +9,7 @@ import (
 )
 
 func RegisterAjaxRoutes(e *echo.Echo, client *ent.Client, store *session.SessionStore) {
-	userHandler := &ajax.UserHandler{Client: client}
+	userHandler := &ajax.UserHandler{Client: client, Store: store}
 	roleHandler := &ajax.RoleHandler{Client: client, Store: store}
 	// Route login harus di luar middleware RequireLoginAPI
 	sijidenGroup := e.Group("/ajax/sijiden")
@@ -17,6 +17,13 @@ func RegisterAjaxRoutes(e *echo.Echo, client *ent.Client, store *session.Session
 	sijidenGroup.POST("/login", ajax.Login(client, store), middleware.RequireCSRF(store))
 
 	sijidenUserGroup := sijidenGroup.Group("/users")
+	sijidenUserGroup.Use(middleware.RequireLoginAjax(store))
+	sijidenUserGroup.Use(middleware.RequireRole("admin", store))
+	sijidenUserGroup.GET("", userHandler.List)
+	sijidenUserGroup.POST("", userHandler.Create)
+	sijidenUserGroup.GET("/:id", userHandler.Detail)
+	sijidenUserGroup.PUT("/:id", userHandler.Update)
+	sijidenUserGroup.DELETE("/:id", userHandler.Delete)
 	sijidenUserGroup.GET("/count", userHandler.CountUsers, middleware.RequireLoginAjax(store))
 
 	sijidenRoleGroup := sijidenGroup.Group("/roles")

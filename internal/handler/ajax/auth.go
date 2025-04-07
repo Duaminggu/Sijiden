@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/duaminggu/sijiden/ent"
 	"github.com/duaminggu/sijiden/ent/user"
@@ -65,6 +66,21 @@ func Login(client *ent.Client, store *session.SessionStore) echo.HandlerFunc {
 		err = bcrypt.CompareHashAndPassword([]byte(userRecord.Password), []byte(req.Password))
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, echo.Map{"error": "email atau password salah"})
+		}
+
+		// update user IP and login
+		now := time.Now()
+		ip := c.RealIP()
+
+		_, err = client.User.
+			UpdateOneID(userRecord.ID).
+			SetLastIP(ip).
+			SetLastLoginAt(now).
+			AddLoginsCount(1).
+			Save(ctx)
+
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, echo.Map{"error": "gagal memperbarui informasi login"})
 		}
 
 		// 🔁 Ambil semua role user

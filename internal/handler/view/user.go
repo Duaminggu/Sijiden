@@ -24,3 +24,9 @@ func UserUpdatePage(store *session.SessionStore) echo.HandlerFunc {
 		return c.Render(http.StatusOK, "sijiden/user/form.html", echo.Map{})
 	}
 }
+
+func UserDetailPage(store *session.SessionStore) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return c.Render(http.StatusOK, "sijiden/user/detail.html", echo.Map{})
+	}
+}
